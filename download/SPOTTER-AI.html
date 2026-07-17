@@ -33,6 +33,7 @@
   /* ===== NorthPoint-style shell (sidebar + topbar + content) ===== */
   .sidebar{position:fixed;top:0;left:0;bottom:0;width:232px;z-index:30;display:flex;flex-direction:column;
     background:rgba(10,10,11,.72);backdrop-filter:blur(12px);border-right:1px solid var(--line);padding:22px 15px}
+  .trial-badge{margin:-8px 10px 12px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(61,134,207,.35);background:rgba(61,134,207,.08);border-radius:6px;padding:5px 9px;text-align:center}
   .sb-brand{display:flex;align-items:center;gap:11px;font-family:var(--sans);font-size:12.5px;letter-spacing:.22em;font-weight:600;padding:6px 8px 20px}
   .sb-brand i{color:var(--accent);font-style:normal}
   .brand-mark{width:26px;height:26px;flex:none;display:block;color:var(--ink);overflow:visible}
@@ -2108,7 +2109,7 @@
     const cp=progLoad(), lc=allLessons(), cpct=lc.length?Math.round(lc.filter(l=>cp[l.id]).length/lc.length*100):0;
     const items=NAV.map(it=>it.group?`<div class="nav-group">${it.group}</div>`
       :`<button class="navitem" data-route="${it.r}" data-hover><span>${it.label}</span>${it.r==="course"?`<span class="nav-badge">${cpct}%</span>`:""}</button>`).join("");
-    $("#sidebar").innerHTML=`<div class="sb-brand"><svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><g class="spin"><circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/><path d="M16 3.4v4.4M16 24.2v4.4M3.4 16h4.4M24.2 16h4.4" stroke="currentColor" stroke-width="1.4" opacity=".4" stroke-linecap="round"/></g><circle class="lock" cx="16" cy="16" r="5.4" fill="none" stroke="var(--accent)" stroke-width="1.35"/><circle cx="16" cy="16" r="2.2" fill="var(--accent)"/></svg>SPOTTER <i>AI</i></div>
+    $("#sidebar").innerHTML=`<div class="sb-brand"><svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><g class="spin"><circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/><path d="M16 3.4v4.4M16 24.2v4.4M3.4 16h4.4M24.2 16h4.4" stroke="currentColor" stroke-width="1.4" opacity=".4" stroke-linecap="round"/></g><circle class="lock" cx="16" cy="16" r="5.4" fill="none" stroke="var(--accent)" stroke-width="1.35"/><circle cx="16" cy="16" r="2.2" fill="var(--accent)"/></svg>SPOTTER <i>AI</i></div>${(userLoad()&&!isFriend())?`<div class="trial-badge">Prueba · ${trialLeft()} día${trialLeft()===1?"":"s"}</div>`:""}
       <button class="sb-profile" data-route="home" data-hover><span class="tb-av">${(name.trim()[0]||"T").toUpperCase()}</span><span class="sb-pinfo"><b>${esc(name)}</b><small>your profile</small></span></button>
       <nav class="navlist">${items}</nav>
       <div class="sb-foot"><button class="navitem" data-route="settings" data-hover><span>Settings</span></button><a class="navitem" href="${DISCORD}" target="_blank" rel="noopener" data-hover><span>Community · Discord</span></a></div>`;
@@ -2149,6 +2150,27 @@
   function userLoad(){try{return JSON.parse(localStorage.getItem("candado_user"))||null;}catch(e){return null;}}
   function userSave(u){try{localStorage.setItem("candado_user",JSON.stringify(u));}catch(e){}}
   function codeHash(s){let h=5381;s=String(s||"").toUpperCase().replace(/\s+/g,"");for(let i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))>>>0;}return h.toString(36);}
+  /* prueba de 7 días · los amigos con código propio quedan exentos (gratis para siempre) */
+  const TRIAL_DAYS=7;
+  const FRIENDS=["rz5ko4","1r9vkdg","1r9ieay","1ra0zcf","1r9gm6n","1ra65wt","1r9x27u","1r9gxgn","1r9v4ie","1ra0zek","1r9d6uv","1ra4go1","1r9g4t0","1ra09ai","1r9tyi9","1r9q97n"];
+  const WA="https://wa.me/524434405815?text="+encodeURIComponent("Hola André, terminó mi prueba de SPOTTER AI y quiero el acceso completo.");
+  function isFriend(){const u=userLoad();return !!(u&&FRIENDS.includes(codeHash(u.code)));}
+  function trialStart(){let t=+localStorage.getItem("candado_trial")||0;if(!t){t=Date.now();try{localStorage.setItem("candado_trial",String(t));}catch(e){}}return t;}
+  function trialLeft(){return Math.max(0,TRIAL_DAYS-Math.floor((Date.now()-trialStart())/86400000));}
+  function trialOver(){return userLoad()&&!isFriend()&&trialLeft()<=0;}
+  function renderTrialEnded(){
+    if(!document.getElementById("gate")){const d=document.createElement("div");d.id="gate";document.body.appendChild(d);}
+    const g=document.getElementById("gate"); if(!g)return;
+    g.innerHTML=`<div class="onb-bg"></div><div class="onb-card">
+      <div class="onb-brand"><svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><g class="spin"><circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/><path d="M16 3.4v4.4M16 24.2v4.4M3.4 16h4.4M24.2 16h4.4" stroke="currentColor" stroke-width="1.4" opacity=".4" stroke-linecap="round"/></g><circle class="lock" cx="16" cy="16" r="5.4" fill="none" stroke="var(--accent)" stroke-width="1.35"/><circle cx="16" cy="16" r="2.2" fill="var(--accent)"/></svg>SPOTTER <i>AI</i></div>
+      <h1 class="onb-h">Tu prueba<br><em>terminó.</em></h1>
+      <p class="onb-p">Fueron <b>7 días de SPOTTER AI</b>, gratis. Para seguir con el mentor en vivo, la comunidad y el paquete completo, desbloquea tu acceso:</p>
+      <div class="gate-form">
+        <a class="btn fill lg" href="${WA}" target="_blank" rel="noopener" data-hover>Desbloquear por WhatsApp →</a>
+        <a class="onb-skip" href="landing.html" data-hover>ver el plan completo</a>
+      </div>
+    </div>`;
+  }
   const ACCESS=["rt2j71","rz5ko4","1r9vkdg","1r9ieay","1ra0zcf","1r9gm6n","1ra65wt","1r9x27u","1r9gxgn","1r9v4ie","1ra0zek","1r9d6uv","1ra4go1","1r9g4t0","1ra09ai","1r9tyi9","1r9q97n"];
   function startGate(){
     if(!document.getElementById("gate")){const d=document.createElement("div");d.id="gate";document.body.appendChild(d);}
@@ -2269,9 +2291,11 @@
   renderSidebar();
   mostrar("home");
   if(localStorage.getItem("candado_demo")){ localStorage.removeItem("candado_historial");localStorage.removeItem("candado_demo"); }
-  /* build de escritorio SPOTTER AI — sin gate de invitación */
+  /* build de escritorio SPOTTER AI — sin gate de invitación, con prueba de 7 días */
   if(!userLoad()) userSave({handle:"trader",code:"DESKTOP",at:Date.now()});
+  if(!isFriend()) trialStart();
   if(!localStorage.getItem("candado_onboarded")) startOnb();
+  else if(trialOver()) renderTrialEnded();
 })();
 </script>
 </body>

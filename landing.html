@@ -338,16 +338,16 @@
   <div class="nav-links">
     <a href="#historia">La historia</a><a href="#oferta">La oferta</a><a href="#mentor">Tu mentor</a><a href="#spotter">El software</a>
   </div>
-  <div class="nav-r"><a class="btn acc" href="#lista">Recibir la app →</a></div>
+  <div class="nav-r"><a class="btn acc" href="#lista">Prueba gratis →</a></div>
 </div></nav>
 
 <!-- HERO -->
 <header class="hero"><div class="wrap">
   <div class="eyebrow reveal"><span class="tick"></span>En vivo · cada mañana en la apertura de Nueva York · 7:00 AM</div>
   <h1 class="display reveal">Aprende.<br>Opera. <em>Cobra.</em></h1>
-  <p class="hero-sub reveal">Aprende a operar futuros con el <b>dinero de empresas fondeadoras — no el tuyo</b>. Mentor en vivo, la plataforma <b>Spotter AI</b> y una comunidad activa. <b>Recibe la app gratis</b> y empieza hoy.</p>
+  <p class="hero-sub reveal">Aprende a operar futuros con el <b>dinero de empresas fondeadoras — no el tuyo</b>. Mentor en vivo, la plataforma <b>Spotter AI</b> y una comunidad activa. <b>Pruébalo 7 días gratis</b> — regístrate y descarga la app hoy.</p>
   <div class="hero-cta reveal">
-    <a class="btn acc lg" href="#lista">Recibir la app gratis →</a>
+    <a class="btn acc lg" href="#lista">Empezar 7 días gratis →</a>
   </div>
 </div>
 <div class="hero-scroll">baja — te cuento cómo funciona</div>
@@ -622,15 +622,22 @@
 
 <!-- LISTA -->
 <section class="block" id="lista"><div class="wrap"><div class="list-card">
-  <span class="sec-k reveal">Empieza gratis</span>
-  <h2 class="sec-h reveal">Descarga la app, <em>gratis.</em></h2>
-  <p class="sec-p reveal" style="margin-inline:auto">Regístrate y te llega a tu correo el <b>link de descarga de la app de escritorio</b> — instálala y ve el sistema funcionando antes de pagar un peso.</p>
+  <span class="sec-k reveal">7 días de prueba · gratis</span>
+  <h2 class="sec-h reveal">Pruébalo <em>7 días gratis.</em></h2>
+  <p class="sec-p reveal" style="margin-inline:auto">Regístrate y <b>descarga la app al instante</b> — 7 días completos para ver el sistema funcionando, sin tarjeta, sin pagar un peso.</p>
   <form class="reg-form reveal" id="reg-form">
     <input type="text" id="reg-name" placeholder="Tu nombre" autocomplete="name" required>
     <input type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email" required>
-    <button class="btn acc" type="submit" id="reg-btn">Enviarme la app →</button>
+    <button class="btn acc" type="submit" id="reg-btn">Empezar gratis →</button>
   </form>
-  <div class="reg-ok" id="reg-ok" hidden>📬 <b>¡Listo, revisa tu correo!</b> Te enviamos el link de descarga de la app de escritorio y toda la info para empezar. (Si no lo ves en unos minutos, revisa spam.)
+  <div class="reg-ok" id="reg-ok" hidden>
+    <div style="font-size:1.2rem;color:var(--text);margin-bottom:10px">🎯 <b>¡Empiezan tus 7 días gratis!</b></div>
+    Descarga la app y empieza ahora:
+    <div style="margin-top:16px"><a class="btn acc lg" id="reg-dl" target="_blank" rel="noopener" download>⬇ Descargar la app</a></div>
+    <div style="margin-top:18px;font-size:.92rem;color:var(--dim)">¿Prefieres la versión web? Entra con tu código de acceso:<br>
+      <b id="reg-code" style="display:inline-block;margin-top:8px;color:var(--acc);font-family:var(--mono);letter-spacing:.14em;font-size:1.1rem;border:1px solid var(--line2);border-radius:6px;padding:8px 16px">SPOTTER-2026</b></div>
+    <div style="margin-top:16px;font-size:.82rem;color:var(--faint);line-height:1.6">Descomprime el .zip → abre <b style="color:var(--dim)">SPOTTER-AI.html</b>. También te lo enviamos a tu correo (revisa spam si no lo ves).</div>
+  </div>
 </div></div></section>
 
 <footer><div class="wrap foot-in">
@@ -693,8 +700,10 @@
       await fetch("https://formsubmit.co/ajax/"+CFG.form,{method:"POST",
         headers:{"Content-Type":"application/json",Accept:"application/json"},
         body:JSON.stringify({name,email,_subject:"👀 Lead SPOTTER AI (descarga app): "+name,_template:"table",_captcha:"false",
-          _autoresponse:"¡Bienvenido a SPOTTER AI, "+name+"! 🎯\n\nSomos una escuela de trading distinta: aprendes a operar futuros con el dinero de empresas fondeadoras — no el tuyo — con un mentor en vivo cada mañana, una comunidad que no te suelta, y el Spotter, un asistente de IA que te cuida mientras operas.\n\nAquí está tu app de escritorio, gratis:\n👉 "+CFG.download+"\n\nO entra a la versión web con tu código de acceso:\n🌐 "+CFG.web+"\n🔑 Código: "+CFG.code+"\n\nCómo instalarla (2 min):\n1) Descarga y descomprime el .zip\n2) Doble clic en SPOTTER-AI.html — se abre tu plataforma\n3) Una sola vez: doble clic en setup-spotter-launcher.command (activa el Spotter)\n\nCada mañana opero la apertura de Nueva York en vivo. Únete a la comunidad: "+CFG.discord+"\n\n¿Quieres el paquete completo con mentoría? SPOTTER AI · $14,000 MXN · pago único, de por vida. Responde este correo o escríbeme por WhatsApp.\n\nNos vemos en Nueva York.\n— André · SPOTTER AI"})});
+          _autoresponse:"¡Bienvenido a SPOTTER AI, "+name+"! 🎯\n\nEmpiezan tus 7 días de prueba gratis. Somos una escuela de trading distinta: aprendes a operar futuros con el dinero de empresas fondeadoras — no el tuyo — con un mentor en vivo cada mañana, una comunidad que no te suelta, y el Spotter, un asistente de IA que te cuida mientras operas.\n\nAquí está tu app de escritorio, gratis:\n👉 "+CFG.download+"\n\nO entra a la versión web con tu código de acceso:\n🌐 "+CFG.web+"\n🔑 Código: "+CFG.code+"\n\nCómo instalarla (2 min):\n1) Descarga y descomprime el .zip\n2) Doble clic en SPOTTER-AI.html — se abre tu plataforma\n3) Una sola vez: doble clic en setup-spotter-launcher.command (activa el Spotter)\n\nCada mañana opero la apertura de Nueva York en vivo. Únete a la comunidad: "+CFG.discord+"\n\n¿Quieres el paquete completo con mentoría? SPOTTER AI · $14,000 MXN · pago único, de por vida. Responde este correo o escríbeme por WhatsApp.\n\nNos vemos en Nueva York.\n— André · SPOTTER AI"})});
     }catch(err){}
+    const dl=$("#reg-dl"); if(dl)dl.href=CFG.download;
+    const cc=$("#reg-code"); if(cc)cc.textContent=CFG.code;
     regForm.hidden=true; $("#reg-ok").hidden=false;
   });
 
