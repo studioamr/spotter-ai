@@ -1,7 +1,7 @@
 {
-  "name": "ONE BULLET",
-  "short_name": "ONE BULLET",
-  "description": "The trading discipline platform — one bullet a session, from zero to payout.",
+  "name": "SPOTTER AI",
+  "short_name": "SPOTTER AI",
+  "description": "AI Trading Assistant — one bullet a session, from zero to payout.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

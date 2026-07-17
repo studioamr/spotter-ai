@@ -1,10 +1,10 @@
-ONE BULLET — Desktop app
-========================
-1. Doble clic en ONE-BULLET.html → se abre tu plataforma.
-2. Haz tu setup de 2 minutos y listo.
-3. Tip: en Chrome puedes fijarla — o usa la versión web e "Instalar ONE BULLET":
+SPOTTER AI — App de escritorio
+==============================
+1. Doble clic en SPOTTER-AI.html → se abre tu plataforma.
+2. Haz tu setup de 2 minutos y listo. (Sin códigos: esta versión ya viene desbloqueada.)
+3. Tip: en Chrome puedes fijarla — o usa la versión web e "Instalar SPOTTER AI":
    https://studioamr.github.io/one-bullet/
-4. Para el asistente IA (Spotter) necesitas tu propia cuenta de Claude: https://claude.ai
+4. Para el Spotter (asistente IA) necesitas tu propia cuenta de Claude: https://claude.ai
 
 Tu progreso se guarda en este equipo automáticamente.
-— André · ONE BULLET
+— André · SPOTTER AI

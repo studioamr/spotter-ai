@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ONE BULLET — Discipline instrument</title>
+<title>SPOTTER AI — AI Trading Assistant</title>
 <meta name="theme-color" content="#0A0A0B">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="assets/icon_192.png">
@@ -33,8 +33,14 @@
   /* ===== NorthPoint-style shell (sidebar + topbar + content) ===== */
   .sidebar{position:fixed;top:0;left:0;bottom:0;width:232px;z-index:30;display:flex;flex-direction:column;
     background:rgba(10,10,11,.72);backdrop-filter:blur(12px);border-right:1px solid var(--line);padding:22px 15px}
-  .sb-brand{font-family:var(--sans);font-size:14px;letter-spacing:.26em;font-weight:600;padding:4px 10px 18px}
+  .sb-brand{display:flex;align-items:center;gap:11px;font-family:var(--sans);font-size:12.5px;letter-spacing:.22em;font-weight:600;padding:6px 8px 20px}
   .sb-brand i{color:var(--accent);font-style:normal}
+  .brand-mark{width:26px;height:26px;flex:none;display:block;color:var(--ink);overflow:visible}
+  .brand-mark .spin{transform-origin:16px 16px;animation:markSpin 24s linear infinite}
+  .brand-mark .lock{transform-origin:16px 16px;animation:markPulse 3.4s ease-in-out infinite}
+  @keyframes markSpin{to{transform:rotate(360deg)}}
+  @keyframes markPulse{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+  @media(prefers-reduced-motion:reduce){.brand-mark .spin,.brand-mark .lock{animation:none}}
   .sb-profile{display:flex;align-items:center;gap:11px;width:100%;background:none;border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin-bottom:14px;cursor:pointer;text-align:left;transition:border-color .2s}
   .sb-profile:hover{border-color:var(--ink2)}
   .tb-av{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--serif);font-size:1rem;color:var(--ink);border:1px solid var(--line);background:radial-gradient(120% 120% at 30% 20%,rgba(61,134,207,.35),rgba(15,15,17,.6))}
@@ -322,8 +328,10 @@
   .onb-prog{display:flex;gap:6px;justify-content:center;margin-bottom:28px}
   .onb-prog span{width:26px;height:3px;border-radius:999px;background:rgba(244,241,234,.1);transition:background .3s}
   .onb-prog span.on{background:var(--accent)}
-  .onb-brand{font-size:15px;letter-spacing:.3em;font-weight:600;margin-bottom:26px}
+  .onb-brand{display:inline-flex;align-items:center;gap:11px;font-size:14px;letter-spacing:.26em;font-weight:600;margin-bottom:26px}
+  .onb-brand .brand-mark{width:28px;height:28px}
   .onb-brand.sm{font-size:12px;margin-bottom:18px}
+  .onb-brand.sm .brand-mark{width:22px;height:22px}
   .onb-brand i{color:var(--accent);font-style:normal}
   .onb-h{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.02;letter-spacing:-.02em;margin-bottom:18px}
   .onb-h em,.onb-h2 em{font-style:italic;color:var(--accent)}
@@ -730,6 +738,8 @@
   .nw:hover .nw-go{color:var(--accent);transform:translate(2px,-2px)}
   /* race to payout */
   .race{display:flex;flex-direction:column;gap:15px}
+  .race-empty{margin-top:4px;padding:16px 18px;border:1px dashed var(--line);border-radius:12px;color:var(--ink1);font-size:.82rem;line-height:1.55}
+  .race-empty b{color:var(--ink)}
   .race-zones{display:flex;justify-content:space-between;font-size:.55rem;text-transform:uppercase;letter-spacing:.14em;color:var(--ink2);padding:0 2px;margin-bottom:2px}
   .race-lane.me .rl-name{color:var(--ink)}
   .race-info{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:10px;flex-wrap:wrap}
@@ -828,9 +838,6 @@
   .stack{display:flex;height:15px;border-radius:8px;overflow:hidden;margin:16px 0 18px;border:1px solid var(--line)}
   .stack span{height:100%}
   .alloc-row i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:9px;vertical-align:middle}
-  .demo-chip{cursor:pointer;font-size:.56rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);
-    border:1px solid rgba(61,134,207,.4);border-radius:999px;padding:.45em 1em;background:transparent;transition:all .3s}
-  .demo-chip:hover{background:rgba(61,134,207,.08)}
 
   /* course */
   .course-prog{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
@@ -1222,7 +1229,7 @@
   /* ---------- events ---------- */
   document.addEventListener("click",e=>{
     const b=e.target.closest("button[data-a]");if(!b)return;
-    ({demo:cargarDemo,limpiardemo:limpiarDemo,sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,addinvest:addInvest,replayonb:startOnb,findmatch:battleFind,createlobby:battleLobby,practicenow:practiceNow,logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
+    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,addinvest:addInvest,replayonb:startOnb,findmatch:battleFind,createlobby:battleLobby,practicenow:practiceNow,logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
   });
   document.addEventListener("input",e=>{ if(!e.target)return;
     if(ONB&&e.target.id&&e.target.id.startsWith("onb-")){ const d=ONB.data, id=e.target.id, v=e.target.value;
@@ -1323,7 +1330,7 @@
         html+=`<div class="ts-cell ${cls} ${d===today?"today":""}"><span class="ts-d">${Number(d.slice(8))}</span>${e?`<span class="ts-pnl">${money(e.pnl)}</span><span class="ts-wl">${e.w}W·${e.l}L</span>`:""}</div>`; }
       html+=`<div class="ts-week ${wk>0?"up":wk<0?"down":""}"><span class="ts-wk-pnl">${wn?money(wk):""}</span><span class="ts-wk-n">${wn?wn+"t":""}</span></div>`; }
     return html+`</div>`; }
-  function emptyState(t){ return `<div class="empty-note">${t}<div style="margin-top:18px"><button class="btn" data-a="demo" data-hover>Load test data</button></div></div>`; }
+  function emptyState(t){ return `<div class="empty-note">${t}<div class="empty-sub" style="margin-top:12px">Start a session and your first result lands here.</div></div>`; }
 
   function bulletScore(st,all){ // TradeZella-style score: 5 axes normalized 0-100
     const days={}; all.filter(t=>t.pnl!=null).forEach(t=>{days[t.fecha]=(days[t.fecha]||0)+t.pnl;});
@@ -1466,11 +1473,6 @@
       if(timeEl)timeEl.innerHTML=`<span>${yr>0?yr+(yr!==1?" years":" year"):""}${yr>0&&mo>0?" ":""}${mo>0?mo+(mo!==1?" months":" month"):""}${yr===0&&mo===0?"under a month":""}</span>`;
       if(chartEl)chartEl.innerHTML=areaChart(curve,"#3d86cf");
     } else { if(timeEl)timeEl.textContent="—"; if(chartEl)chartEl.innerHTML=""; } }
-  function cargarDemo(){ const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-    const mk=(back,out,pnl,dur,setup,emo,rev)=>{const d=new Date();d.setDate(d.getDate()-back);return {fecha:iso(d),outcome:out,revenges:rev||0,durMin:dur,pnl,setup,emotion:emo};};
-    histSave([mk(1,'GANADA',180,14,'orb','disciplina'),mk(2,'BLOQUEADO',-120,6,'breakout','neutral'),mk(3,'GANADA',240,22,'orb','paciencia'),mk(5,'BLOQUEADO',-150,4,'rev','revancha',1),mk(6,'GANADA',200,18,'orb','disciplina'),mk(8,'GANADA',90,11,'smc','neutral'),mk(9,'BLOQUEADO',-110,7,'emas','ansioso'),mk(10,'GANADA',160,16,'orb','disciplina'),mk(13,'GANADA',130,13,'killzone','paciencia')]);
-    try{localStorage.setItem("candado_demo","1");}catch(e){} location.reload(); }
-  function limpiarDemo(){ try{localStorage.removeItem("candado_historial");localStorage.removeItem("candado_demo");}catch(e){} location.reload(); }
 
   /* ===================== COURSE · Zero to Payout ===================== */
   const COURSE=[
@@ -1670,25 +1672,18 @@
     if(prof>=tgt) return {u:name,you:true,phase:"funded",balance:size+prof,bufferPct:Math.min(100,Math.round((prof-tgt)/(tgt*0.6)*100))};
     return {u:name,you:true,phase:"eval",balance:size+prof,evalPct:Math.max(0,Math.min(100,Math.round(prof/tgt*100)))};
   }
-  const RACE_SEED=[
-    {u:"blascous",phase:"payout",balance:54120,payouts:6},
-    {u:"wildcard",phase:"payout",balance:53340,payouts:3},
-    {u:"shhmellow",phase:"funded",balance:52602,bufferPct:64},
-    {u:"bakurafx",phase:"funded",balance:51380,bufferPct:28},
-    {u:"marco_fx",phase:"eval",balance:50820,evalPct:82},
-    {u:"kz_hunter",phase:"eval",balance:50430,evalPct:43},
-  ];
   function buildRace(){
-    const rows=RACE_SEED.concat([youRacer()]).map(m=>({...m,pos:racePos(m)})).sort((a,b)=>b.pos-a.pos);
-    const lead=rows[0];
+    const you=youRacer(); const rows=[{...you,pos:racePos(you)}];
     return `<div class="race">
       <div class="race-zones"><span>Eval</span><span>Funded</span><span>Eden →</span></div>
-      ${rows.map(m=>{const ph=PH_RACE[m.phase]||PH_RACE.eval,isLead=m===lead;return `<div class="race-lane ${m.you?"me":""}">
-        <div class="race-info"><span class="rl-name">${esc(m.u)}${m.you?' <em>you</em>':""}${isLead?' <span class="lead-tag">leader</span>':""}</span>
+      ${rows.map(m=>{const ph=PH_RACE[m.phase]||PH_RACE.eval;return `<div class="race-lane ${m.you?"me":""}">
+        <div class="race-info"><span class="rl-name">${esc(m.u)}${m.you?' <em>you</em>':""}</span>
           <span class="rl-meta"><span class="rl-badge" style="color:${ph.c};border-color:${ph.c}">${ph.l}</span><span class="rl-bal">$${m.balance.toLocaleString("en-US")}</span></span></div>
         <div class="race-track"><span class="rt-tick" style="left:33%"></span><span class="rt-tick" style="left:66%"></span><span class="rt-finish"></span>
           <div class="rc-run ${m.you?"me":""}" data-pos="${m.pos.toFixed(1)}" style="left:2%;background:${ph.c}">${initials(m.u)}</div></div>
-      </div>`;}).join("")}</div>`;
+      </div>`;}).join("")}
+      <div class="race-empty">You're starting fresh — <b>your lane begins at zero.</b> The race fills in with the crew once you join a community and the live backend is connected.</div>
+    </div>`;
   }
   function viewHome(){
     const name=profileLoad().handle||"trader";
@@ -1720,7 +1715,7 @@
       ${sec("Recommended prop firms",firms)}
     </div>`;
   }
-  /* ---------- Start Session · ONE BULLET in 3 phases (his sketch) ---------- */
+  /* ---------- Start Session · SPOTTER AI · one bullet in 3 phases ---------- */
   const TV_URL="https://www.tradingview.com/chart/";
   function sessLoad(){try{const s=JSON.parse(localStorage.getItem("candado_session"))||{phase:"ready"};
     if(s.phase!=="ready"&&s.startedAt){const d=new Date(s.startedAt),iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
@@ -1749,7 +1744,7 @@
   function endSession(){ const s=sessLoad(); s.phase="done"; s.result=s.result||"flat"; s.endedAt=Date.now(); sessSave(s); mostrar("sesion"); }
   function newSession(){ sessSave({phase:"ready"}); mostrar("sesion"); }
   function sessInfoCard(){
-    return `<div class="p-card ses-info"><div class="c-t">One Bullet is with you</div>
+    return `<div class="p-card ses-info"><div class="c-t">The Spotter is with you</div>
       <ul class="ses-ul"><li>Watches and analyzes in real time</li><li>Tracks your strategy on the chart</li><li>Reminds you of your plan</li><li>Builds your performance summary</li></ul></div>`;
   }
   function rulesLoad(){try{return Object.assign({trades:1,risk:1,sess:1.5,target:2},JSON.parse(localStorage.getItem("candado_rules")||"{}"));}catch(e){return{trades:1,risk:1,sess:1.5,target:2};}}
@@ -1762,11 +1757,11 @@
     const mode=sesModeLoad(), a=acctLoad()||{firm:"Tradeify"};
     return `<div class="sess-ready">
       <div class="p-card sr-hero">
-        <div class="sr-eyebrow">ONE BULLET · trading session</div>
+        <div class="sr-eyebrow">SPOTTER AI · trading session</div>
         <h2 class="sr-h">Start your <em>session.</em></h2>
         <p class="sr-p">${mode==="sim"
           ?`<b>Practice mode</b> — a simulated account so you can train the full routine any day, funded or not. Nothing at risk, nothing counts toward your payout.`
-          :`Premarket together, mark the zones, then the chamber loads with <b>one bullet</b>. One Bullet watches the tape with you and writes your report at the end.`}</p>
+          :`Premarket together, mark the zones, then the chamber loads with <b>one bullet</b>. The Spotter watches the tape with you and writes your report at the end.`}</p>
         <div class="onb-row ses-mode">
           <button class="onb-pill ${mode==="live"?"on":""}" data-sesmode="live" data-hover>Live · ${esc(a.firm||"account")}</button>
           <button class="onb-pill ${mode==="sim"?"on":""}" data-sesmode="sim" data-hover>Practice · SIM</button>
@@ -1785,7 +1780,7 @@
   }
   function sesFase1(s){
     return `<div class="sess-live">
-      <div class="p-card sl-top"><div class="sl-status"><span class="sl-dot"></span> Phase 1 · live · <b>One Bullet monitoring</b>${simBadge(s)}</div><div class="sl-time" id="sl-time">0m</div></div>
+      <div class="p-card sl-top"><div class="sl-status"><span class="sl-dot"></span> Phase 1 · live · <b>Spotter monitoring</b>${simBadge(s)}</div><div class="sl-time" id="sl-time">0m</div></div>
       <div class="ses-grid">
         <div class="p-card ses-main">
           <div class="c-t">The chamber is loaded</div>
@@ -1804,7 +1799,7 @@
       <div class="ses-grid">
         <div class="p-card ses-main">
           <div class="c-t">Manage the trade — then seal it</div>
-          <p class="home-p">One Bullet is watching. Manage to your plan — partials, break-even, let it work. When it closes, seal the result. <b>Either way, the session ends here: one bullet.</b></p>
+          <p class="home-p">The Spotter is watching. Manage to your plan — partials, break-even, let it work. When it closes, seal the result. <b>Either way, the session ends here: one bullet.</b></p>
           <div class="ses-seal"><button class="btn fill lg" data-a="won" data-hover>WON</button><button class="btn danger lg" data-a="lost" data-hover>LOST</button></div>
         </div>
         ${sessInfoCard()}
@@ -1844,10 +1839,9 @@
   /* ---------- Accounts ---------- */
   function acctsLoad(){try{return JSON.parse(localStorage.getItem("candado_accounts"))||null;}catch(e){return null;}}
   function acctsSave(a){try{localStorage.setItem("candado_accounts",JSON.stringify(a));}catch(e){}}
-  const ACCTS_SEED=[{firm:"Tradeify",size:50000,phase:"eval",balance:50820,pnl:820},{firm:"Apex",size:50000,phase:"funded",balance:52100,pnl:2100}];
-  function addAccount(){const a=acctsLoad()||ACCTS_SEED.slice();a.push({firm:"New firm",size:50000,phase:"eval",balance:50000,pnl:0});acctsSave(a);if(vistaActual==="cuentas")mostrar("cuentas");}
+  function addAccount(){const a=acctsLoad()||[];a.push({firm:"New firm",size:50000,phase:"eval",balance:50000,pnl:0});acctsSave(a);if(vistaActual==="cuentas")mostrar("cuentas");}
   function viewAccounts(){
-    let a=acctsLoad(); if(!a){a=ACCTS_SEED.slice();acctsSave(a);}
+    let a=acctsLoad()||[]; // un perfil nuevo empieza sin cuentas fondeadas
     const PH={eval:{l:"In evaluation",c:"#C9A24B"},funded:{l:"Funded",c:"var(--accent)"},payout:{l:"Payout ready",c:"#35c46f"}};
     const total=a.reduce((s,x)=>s+(x.pnl||0),0);
     return `<div class="accts">
@@ -1884,7 +1878,7 @@
     const ann=`<div class="marquee"><div class="marquee-track">${strip}${strip}</div></div>`;
     return `<div class="home2">
       ${homeSec("Announcements",ann)}
-      ${homeSec("Race to payout",buildRace(),"Sample positions — live with the community backend.")}
+      ${homeSec("Race to payout",buildRace(),"Your path to payout · the community race connects soon.")}
     </div>`;
   }
   /* ---------- Training · 1v1 battles (Chart Champs logic) ---------- */
@@ -2034,11 +2028,12 @@
       <div class="p-card"><div class="c-t">Account</div>
         <div class="inv-top"><div><span class="k-l">Balance</span><div class="inv-bal">$${inv.balance.toLocaleString("en-US",{minimumFractionDigits:2})}</div></div>
         <div class="pout-add"><div class="inp-money">$<input id="inv-add" type="number" placeholder="500"></div><button class="btn fill" data-a="addinvest" data-hover>Add investment</button></div></div></div>
-      <div class="p-card"><div class="c-t">Portfolio</div>
+      <div class="p-card"><div class="c-t">Model allocation · example</div>
         <div class="inv-grid">
           ${donutSvg(PORTFOLIO)}
           <div class="alloc">${PORTFOLIO.map(s=>`<div class="alloc-row"><span><i class="dotc" style="background:${s.c}"></i>${s.n}</span><b>${s.pct}%</b></div>`).join("")}</div>
-        </div></div>
+        </div>
+        <p class="home-note" style="margin-top:12px">An example of how to spread what you save — not your holdings, not advice.</p></div>
       <div class="p-card"><div class="c-t">Projection · 2027</div>
         <div class="kpis"><div class="kpi"><div class="k-l">Today</div><div class="k-v">$${inv.balance.toLocaleString("en-US")}</div></div>
         <div class="kpi"><div class="k-l">At 10%/yr → end of 2027</div><div class="k-v up">$${Math.round(proj).toLocaleString("en-US")}</div></div>
@@ -2076,8 +2071,7 @@
       <div class="p-card"><div class="c-t">Trading account</div>
         <div class="acct-edit"><span>Firm <input id="acct-firm" value="${esc(a.firm||"")}"></span><span>Size $<input id="acct-size" type="number" value="${a.size||50000}"></span><span>Eval target $<input id="acct-target" type="number" value="${a.evalTarget||1000}"></span></div></div>
       <div class="p-card"><div class="c-t">Data</div>
-        <div class="sl-actions">${localStorage.getItem("candado_demo")?`<button class="btn" data-a="limpiardemo" data-hover>Clear test data</button>`:`<button class="btn" data-a="demo" data-hover>Load test data</button>`}
-        <button class="btn" data-a="replayonb" data-hover>Replay setup</button>
+        <div class="sl-actions"><button class="btn" data-a="replayonb" data-hover>Replay setup</button>
         <a class="btn" href="landing.html" target="_blank" rel="noopener" data-hover>Course page →</a>
         <a class="btn" href="${DISCORD}" target="_blank" rel="noopener" data-hover>Discord →</a></div></div>
     </div>`;
@@ -2112,7 +2106,7 @@
     const cp=progLoad(), lc=allLessons(), cpct=lc.length?Math.round(lc.filter(l=>cp[l.id]).length/lc.length*100):0;
     const items=NAV.map(it=>it.group?`<div class="nav-group">${it.group}</div>`
       :`<button class="navitem" data-route="${it.r}" data-hover><span>${it.label}</span>${it.r==="course"?`<span class="nav-badge">${cpct}%</span>`:""}</button>`).join("");
-    $("#sidebar").innerHTML=`<div class="sb-brand">ONE <i>BULLET</i></div>
+    $("#sidebar").innerHTML=`<div class="sb-brand"><svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><g class="spin"><circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/><path d="M16 3.4v4.4M16 24.2v4.4M3.4 16h4.4M24.2 16h4.4" stroke="currentColor" stroke-width="1.4" opacity=".4" stroke-linecap="round"/></g><circle class="lock" cx="16" cy="16" r="5.4" fill="none" stroke="var(--accent)" stroke-width="1.35"/><circle cx="16" cy="16" r="2.2" fill="var(--accent)"/></svg>SPOTTER <i>AI</i></div>
       <button class="sb-profile" data-route="home" data-hover><span class="tb-av">${(name.trim()[0]||"T").toUpperCase()}</span><span class="sb-pinfo"><b>${esc(name)}</b><small>your profile</small></span></button>
       <nav class="navlist">${items}</nav>
       <div class="sb-foot"><button class="navitem" data-route="settings" data-hover><span>Settings</span></button><a class="navitem" href="${DISCORD}" target="_blank" rel="noopener" data-hover><span>Community · Discord</span></a></div>`;
@@ -2122,7 +2116,7 @@
   function mostrar(v){ if(!VISTAS[v])v="home"; vistaActual=v; if(v!=="course")courseLesson=null;
     document.querySelectorAll("#sidebar .navitem[data-route]").forEach(a=>a.classList.toggle("on",a.dataset.route===v));
     const s=document.getElementById("sidebar"); if(s)s.classList.remove("open");
-    const V=VISTAS[v], chip=localStorage.getItem("candado_demo")?`<button class="demo-chip" data-a="limpiardemo" data-hover>test data · clear</button>`:"";
+    const V=VISTAS[v], chip="";
     $("#panel").innerHTML=`<div class="pv-head"><div><div class="pv-title">${V.t}</div><div class="pv-sub">${V.s}</div></div>${chip}</div>`+V.f();
     $("#panel").scrollTop=0;
     if(v==="investments")capCalc();
@@ -2161,7 +2155,7 @@
   function renderGate(err){
     const g=document.getElementById("gate"); if(!g)return;
     g.innerHTML=`<div class="onb-bg"></div><div class="onb-card">
-      <div class="onb-brand">ONE <i>BULLET</i></div>
+      <div class="onb-brand"><svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><g class="spin"><circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/><path d="M16 3.4v4.4M16 24.2v4.4M3.4 16h4.4M24.2 16h4.4" stroke="currentColor" stroke-width="1.4" opacity=".4" stroke-linecap="round"/></g><circle class="lock" cx="16" cy="16" r="5.4" fill="none" stroke="var(--accent)" stroke-width="1.35"/><circle cx="16" cy="16" r="2.2" fill="var(--accent)"/></svg>SPOTTER <i>AI</i></div>
       <h1 class="onb-h">From zero<br>to <em>payout.</em></h1>
       <p class="onb-p">Invite-only. The platform is <b>free for invited traders</b> — your AI spotter runs on your own Claude.</p>
       <div class="gate-form">
@@ -2212,7 +2206,7 @@
     const d=ONB.data, s=ONB.step, last=ONB_STEPS.length-1;
     const prog=`<div class="onb-prog">${ONB_STEPS.map((_,i)=>`<span class="${i<=s?"on":""}"></span>`).join("")}</div>`;
     let body="";
-    if(s===0) body=`<div class="onb-brand">ONE <i>BULLET</i></div>
+    if(s===0) body=`<div class="onb-brand"><svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><g class="spin"><circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/><path d="M16 3.4v4.4M16 24.2v4.4M3.4 16h4.4M24.2 16h4.4" stroke="currentColor" stroke-width="1.4" opacity=".4" stroke-linecap="round"/></g><circle class="lock" cx="16" cy="16" r="5.4" fill="none" stroke="var(--accent)" stroke-width="1.35"/><circle cx="16" cy="16" r="2.2" fill="var(--accent)"/></svg>SPOTTER <i>AI</i></div>
       <h1 class="onb-h">From zero<br>to <em>payout.</em></h1>
       <p class="onb-p">Two minutes to set up your platform — your profile, your rules, your room. Everything stays yours and editable.</p>
       <button class="btn fill lg" data-onb="next" data-hover>Start →</button>`;
@@ -2243,13 +2237,13 @@
       body=`<div class="onb-k">Communities</div><h2 class="onb-h2">Join the room.</h2>
       <p class="onb-p" style="margin-top:0">Pick what you want in — <b>nothing is automatic</b>. You can join or leave any time.</p>
       <div class="onb-comms">
-        ${card("discord","ONE BULLET Discord","The main room — daily bias, payouts, the crew")}
+        ${card("discord","SPOTTER AI Discord","The main room — daily bias, payouts, the crew")}
         ${card("live","Live NY sessions","Trade the open together every morning")}
         ${card("battles","1v1 battles","Same replay, best P&L wins — Elo on the line")}
         ${card("news","Announcements & daily bias","The tape brief, every morning")}
       </div>
       <a class="btn accent" href="${DISCORD}" target="_blank" rel="noopener" data-hover>Join the Discord now →</a>`; }
-    else body=`<div class="onb-brand sm">ONE <i>BULLET</i></div>
+    else body=`<div class="onb-brand sm">SPOTTER <i>AI</i></div>
       <h2 class="onb-h2">You're set, <em>${esc((d.handle||"trader").trim()||"trader")}.</em></h2>
       <div class="onb-sum">
         <div class="alloc-row"><span>Account</span><b>${esc(d.firm)} · $${(d.size||0).toLocaleString("en-US")}</b></div>
@@ -2272,6 +2266,8 @@
   document.body.classList.add("data-view-open");
   renderSidebar();
   mostrar("home");
+  if(localStorage.getItem("candado_demo")){ // retira cualquier data de prueba vieja
+    localStorage.removeItem("candado_historial");localStorage.removeItem("candado_demo"); }
   if(!userLoad()) startGate();
   else if(!localStorage.getItem("candado_onboarded")) startOnb();
 })();
