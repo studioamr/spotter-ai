@@ -926,6 +926,27 @@
   .trade-nudge{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:rgba(61,134,207,.09);border-color:rgba(61,134,207,.4)}
   .trade-nudge .tn-txt{font-size:.95rem;line-height:1.5}.trade-nudge .tn-txt b{color:var(--accent)}
   .trade-nudge .tn-actions{display:flex;gap:8px;flex-shrink:0}
+  .season-card{background:linear-gradient(180deg,rgba(201,162,75,.07),rgba(61,134,207,.04));border-color:rgba(201,162,75,.28)}
+  .season-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+  .season-sub{font-size:.82rem;color:var(--ink1);margin-top:3px}.season-sub b{color:#C9A24B}
+  .season-rank{font-family:var(--serif);font-size:2rem;line-height:1;color:#C9A24B;text-align:right}.season-rank small{display:block;font-family:var(--sans);font-size:.7rem;color:var(--ink1)}
+  .season-board{display:flex;flex-direction:column;gap:2px}
+  .sb-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;font-size:.9rem}
+  .sb-row.you{background:rgba(61,134,207,.1);border:1px solid rgba(61,134,207,.3)}
+  .sb-rank{width:20px;color:var(--ink1);font-variant-numeric:tabular-nums;text-align:center}
+  .sb-av{width:26px;height:26px;border-radius:50%;background:#15161A;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;flex-shrink:0}
+  .sb-u{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sb-pnl{font-variant-numeric:tabular-nums;font-weight:600}
+  .sb-meta{color:var(--ink1);font-size:.78rem;font-variant-numeric:tabular-nums;min-width:78px;text-align:right}
+  .trades-head{display:flex;justify-content:flex-end;margin-bottom:14px}
+  .tr-edit{cursor:pointer;color:var(--ink1);text-align:center;width:34px;transition:color .15s}.tr-edit:hover{color:var(--accent)}
+  .trade-card{max-width:520px}
+  .trade-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+  .trade-form label{display:flex;flex-direction:column;gap:5px;font-size:.8rem;color:var(--ink1)}
+  .trade-form label.td-rev{grid-column:1/-1;flex-direction:row;align-items:center;gap:9px;font-size:.85rem;color:var(--ink);cursor:pointer}
+  .trade-form label.td-rev input{width:auto}
+  .trade-form input,.trade-form select{background:#000;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px 10px;font:inherit;font-size:.92rem}
+  .trade-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
   .comm2{gap:14px}
   .room-pulse{padding:20px 22px}
   .rp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
@@ -1158,13 +1179,39 @@
   function supaHead(x){ return Object.assign({apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},x||{}); }
   function supaUpsert(){ try{
     const p=profileLoad()||{}, a=acctLoad()||{}, r=eloLoad(), yr=youRacer(), done=(NPtrades()||[]).filter(t=>t.result), wins=done.filter(t=>t.result==="win").length;
-    const row={ id:deviceId(), handle:(p.handle||"trader").toString().slice(0,24), firm:a.firm||null, phase:yr.phase||"eval",
+    const base={ id:deviceId(), handle:(p.handle||"trader").toString().slice(0,24), firm:a.firm||null, phase:yr.phase||"eval",
       elo:(r.elo||1200)|0, net_pnl:Math.round(totalProfit()||0), win_rate:done.length?Math.round(wins/done.length*100):0,
       trades:done.length, eval_pct:Math.round(yr.evalPct||0), updated_at:new Date().toISOString() };
-    fetch(SUPA_URL+"/rest/v1/profiles",{method:"POST",headers:supaHead({Prefer:"resolution=merge-duplicates,return=minimal"}),body:JSON.stringify(row)}).catch(()=>{});
+    const ss=seasonStats(), full=Object.assign({},base,{season:seasonId(),season_pnl:ss.pnl,season_sessions:ss.sessions,season_disc:ss.disc});
+    const H=supaHead({Prefer:"resolution=merge-duplicates,return=minimal"});
+    fetch(SUPA_URL+"/rest/v1/profiles",{method:"POST",headers:H,body:JSON.stringify(full)})
+      .then(r=>{ if(!r.ok){ fetch(SUPA_URL+"/rest/v1/profiles",{method:"POST",headers:H,body:JSON.stringify(base)}).catch(()=>{}); } }) // columnas de temporada aún sin migrar → sube lo base
+      .catch(()=>{});
   }catch(e){} }
-  function supaRefresh(){ fetch(SUPA_URL+"/rest/v1/profiles?select=id,handle,phase,elo,net_pnl,win_rate,eval_pct&order=elo.desc&limit=60",{headers:supaHead()})
+  function supaRefresh(){ fetch(SUPA_URL+"/rest/v1/profiles?select=*&order=elo.desc&limit=60",{headers:supaHead()})
     .then(r=>r.ok?r.json():null).then(d=>{ if(Array.isArray(d)){ SUPA_PROFILES=d; if(["training","comunidad","progreso"].indexOf(vistaActual)>=0) mostrar(vistaActual); } }).catch(()=>{}); }
+  /* --- temporadas / cohortes: cada mes, todos compiten en la misma ventana --- */
+  const MESES_L=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  function seasonId(){ return hoy().slice(0,7); }                 // YYYY-MM
+  function seasonName(){ const p=seasonId().split("-"); return (MESES_L[+p[1]-1]||"")+" "+p[0]; }
+  function seasonDaysLeft(){ const d=new Date(), last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(); return Math.max(0,last-d.getDate()); }
+  function seasonStats(){ const sid=seasonId(); const h=histLoad().filter(x=>x.outcome&&!x.sim&&(x.fecha||"").slice(0,7)===sid);
+    const pnl=h.reduce((a,x)=>a+(x.pnl||0),0), sessions=h.length, clean=h.filter(x=>!x.revenges).length;
+    return {pnl:Math.round(pnl),sessions,disc:sessions?Math.round(clean/sessions*100):0}; }
+  function seasonCard(){
+    const sid=seasonId(), me=deviceId(), ss=seasonStats(), name=(profileLoad()||{}).handle||"tú";
+    // miembros reales de esta temporada (Supabase) + tú con stats locales frescas
+    let rows=(SUPA_PROFILES||[]).filter(p=>p.season===sid&&p.id!==me)
+      .map(p=>({u:p.handle||"trader",pnl:p.season_pnl||0,sessions:p.season_sessions||0,disc:p.season_disc||0,you:false}));
+    rows.push({u:name,pnl:ss.pnl,sessions:ss.sessions,disc:ss.disc,you:true});
+    rows.sort((a,b)=>(b.pnl-a.pnl)||(b.disc-a.disc)||(b.sessions-a.sessions));
+    const rank=rows.findIndex(r=>r.you)+1, total=rows.length, solo=total<=1;
+    const board=rows.slice(0,6).map((r,i)=>`<div class="sb-row ${r.you?"you":""}"><span class="sb-rank">${i+1}</span><span class="sb-av">${initials(r.u)}</span><span class="sb-u">${esc(r.u)}${r.you?" · tú":""}</span><span class="sb-pnl ${r.pnl>=0?"up":"down"}">${money(r.pnl)}</span><span class="sb-meta">${r.sessions} ses · ${r.disc}%</span></div>`).join("");
+    return `<div class="p-card season-card">
+      <div class="season-top"><div><div class="c-t" style="margin:0">Temporada · ${seasonName()}</div><div class="season-sub">Cohorte activa · se reinicia en <b>${seasonDaysLeft()}</b> días</div></div><div class="season-rank">#${rank}<small>de ${total}</small></div></div>
+      <div class="season-board">${board}</div>
+      <p class="home-note">${solo?"Eres el primero de la cohorte de este mes — cada sesión que selles te sube. La sala aparece conforme el crew registra.":"Todos compiten en la misma ventana: net P&L de la temporada. Se reinicia cada mes y la disciplina es el desempate."}</p></div>`;
+  }
   const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
   const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   const SETUPS_L={orb:"ORB",killzone:"Killzone",smc:"SMC",emas:"EMAs",breakout:"Breakout",rev:"Reversal",otro:"Other"};
@@ -1419,7 +1466,7 @@
   /* ---------- events ---------- */
   document.addEventListener("click",e=>{
     const b=e.target.closest("button[data-a]");if(!b)return;
-    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,shareshot:sealPoster,dismissnudge:()=>{TRADING_NUDGE="";statusPush(sessLoad().phase||"ready");mostrar(vistaActual);},addinvest:addInvest,replayonb:startOnb,createlobby:battleLobby,practicenow:practiceNow,joinrace:()=>{raceJoin();mostrar("progreso");},trainstart:trainStart,trainend:trainEnd,trainwon:()=>trainSeal("won"),trainlost:()=>trainSeal("lost"),copyamr:myPlanCopyAMR,spkr:spkToggle,wallpost:()=>{const i=$("#wall-input"),v=i&&i.value.trim();if(v){supaPost(v);if(i)i.value="";}},invite:()=>{try{window.open("https://wa.me/?text="+encodeURIComponent("Prueba SPOTTER AI conmigo — la plataforma de trading con disciplina: https://studioamr.github.io/spotter-ai/landing.html"),"_blank");}catch(e){}},logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
+    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,shareshot:sealPoster,tradenew:tradeNew,tradesave:tradeSave,tradedel:tradeDelete,dismissnudge:()=>{TRADING_NUDGE="";statusPush(sessLoad().phase||"ready");mostrar(vistaActual);},addinvest:addInvest,replayonb:startOnb,createlobby:battleLobby,practicenow:practiceNow,joinrace:()=>{raceJoin();mostrar("progreso");},trainstart:trainStart,trainend:trainEnd,trainwon:()=>trainSeal("won"),trainlost:()=>trainSeal("lost"),copyamr:myPlanCopyAMR,spkr:spkToggle,wallpost:()=>{const i=$("#wall-input"),v=i&&i.value.trim();if(v){supaPost(v);if(i)i.value="";}},invite:()=>{try{window.open("https://wa.me/?text="+encodeURIComponent("Prueba SPOTTER AI conmigo — la plataforma de trading con disciplina: https://studioamr.github.io/spotter-ai/landing.html"),"_blank");}catch(e){}},logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
   });
   document.addEventListener("input",e=>{ if(!e.target)return;
     if(ONB&&e.target.id&&e.target.id.startsWith("onb-")){ const d=ONB.data, id=e.target.id, v=e.target.value;
@@ -1502,10 +1549,56 @@
 
   /* ===================== JOURNAL ENGINE (NorthPoint tech) ===================== */
   function NPtrades(){ return histLoad().slice().reverse().map(x=>({
-    fecha:x.fecha, pnl:(x.pnl==null?null:x.pnl),
+    id:x.id, fecha:x.fecha, pnl:(x.pnl==null?null:x.pnl),
     result:(x.pnl>0?"win":x.pnl<0?"loss":(x.outcome==="GANADA"?"win":"loss")),
     durMin:x.durMin||0, revenges:x.revenges||0, setup:x.setup||null, emotion:x.emotion||null, notes:x.notes||"", outcome:x.outcome, sim:!!x.sim
   })); }
+  function uid(){ return "t_"+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4); }
+  function ensureTradeIds(){ const h=histLoad(); let ch=false; h.forEach(x=>{ if(!x.id){ x.id=uid(); ch=true; } }); if(ch)histSave(h); return h; }
+  /* ---------- Journal editable: agregar / editar / borrar un trade ---------- */
+  var EDITING_TRADE=null;
+  function tradeById(id){ return histLoad().find(x=>x.id===id)||null; }
+  function tradeNew(){ tradeEditor(null); }
+  function tradeEdit(id){ tradeEditor(tradeById(id)); }
+  function closeTradeModal(){ const m=document.getElementById("trade-modal"); if(m){m.hidden=true;m.innerHTML="";} EDITING_TRADE=null; }
+  function tradeEditor(rec){
+    const isNew=!rec; rec=rec||{}; EDITING_TRADE=rec.id||null;
+    let m=document.getElementById("trade-modal"); if(!m){m=document.createElement("div");m.id="trade-modal";m.className="spot-modal";document.body.appendChild(m);}
+    const setups=Object.keys(SETUPS_L), emos=Object.keys(EMO_L);
+    m.innerHTML=`<div class="spot-card trade-card"><button class="spot-x" data-tradeclose>×</button>
+      <div class="c-t">${isNew?"Agregar trade":"Editar trade"}</div>
+      <div class="trade-form">
+        <label>Fecha<input id="td-fecha" type="date" value="${esc(rec.fecha||hoy())}"></label>
+        <label>Resultado<select id="td-res"><option value="win"${rec.outcome!=="BLOQUEADO"?" selected":""}>Ganado</option><option value="loss"${rec.outcome==="BLOQUEADO"?" selected":""}>Perdido</option></select></label>
+        <label>Resultado $<input id="td-pnl" type="number" inputmode="decimal" placeholder="0" value="${rec.pnl!=null?rec.pnl:""}"></label>
+        <label>Duración (min)<input id="td-dur" type="number" min="0" placeholder="0" value="${rec.durMin||""}"></label>
+        <label>Setup<select id="td-setup"><option value="">—</option>${setups.map(k=>`<option value="${k}"${rec.setup===k?" selected":""}>${SETUPS_L[k]}</option>`).join("")}</select></label>
+        <label>Emoción<select id="td-emo"><option value="">—</option>${emos.map(k=>`<option value="${k}"${rec.emotion===k?" selected":""}>${EMO_L[k]}</option>`).join("")}</select></label>
+        <label class="td-rev"><input id="td-rev" type="checkbox"${rec.revenges?" checked":""}> Fue revenge / rompiste la disciplina</label>
+      </div>
+      <textarea id="td-notes" class="home-editor" placeholder="qué viste, qué sentiste, qué mejorar…">${esc(rec.notes||"")}</textarea>
+      <div class="trade-actions">
+        <button class="btn fill" data-a="tradesave" data-hover>Guardar</button>
+        ${isNew?"":`<button class="btn danger" data-a="tradedel" data-hover>Borrar</button>`}
+        <button class="btn ghost" data-tradeclose data-hover>Cancelar</button>
+      </div></div>`;
+    m.hidden=false;
+  }
+  function tradeSave(){ const g=x=>document.getElementById(x);
+    const fecha=(g("td-fecha")&&g("td-fecha").value)||hoy();
+    const res=(g("td-res")&&g("td-res").value)||"win";
+    const pnlV=g("td-pnl")?parseFloat(g("td-pnl").value):NaN, durV=g("td-dur")?parseInt(g("td-dur").value,10):NaN;
+    const rec={ id:EDITING_TRADE||uid(), fecha, outcome:res==="win"?"GANADA":"BLOQUEADO",
+      pnl:isNaN(pnlV)?null:pnlV, durMin:isNaN(durV)?null:durV,
+      setup:(g("td-setup")&&g("td-setup").value)||null, emotion:(g("td-emo")&&g("td-emo").value)||null,
+      revenges:(g("td-rev")&&g("td-rev").checked)?1:0, notes:(g("td-notes")&&g("td-notes").value)||"", sim:false };
+    const h=histLoad(); const i=h.findIndex(x=>x.id===rec.id);
+    if(i>=0)Object.assign(h[i],rec); else h.push(rec);
+    h.sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||"")); // journal más reciente arriba
+    histSave(h); supaUpsert(); closeTradeModal(); mostrar("trades");
+  }
+  function tradeDelete(){ const id=EDITING_TRADE; if(!id)return; if(!confirm("¿Borrar este trade? No se puede deshacer."))return;
+    histSave(histLoad().filter(x=>x.id!==id)); supaUpsert(); closeTradeModal(); mostrar("trades"); }
   function money(n){ if(n==null||isNaN(n))return "—"; const s=n<0?"−":(n>0?"+":""); return s+"$"+Math.abs(Math.round(n)).toLocaleString("en-US"); }
   function pf_txt(pf){ return pf===Infinity?"∞":pf.toFixed(2); }
   function groupBy(arr,fn){ const m={}; arr.forEach(t=>{const k=fn(t); if(k==null||k==="")return; (m[k]=m[k]||[]).push(t);}); return m; }
@@ -1612,9 +1705,12 @@
       <div class="kpi"><div class="k-l">Profit factor</div><div class="k-v">${st.hasP?pf_txt(st.profitFactor):"—"}</div></div></div>
     <div class="p-card">${calendarFull(calMonth)}</div>`; }
 
-  function viewTrades(){ const all=NPtrades().slice().reverse(); if(!all.length)return emptyState("No trades yet. Every sealed session is logged here with its duration, result, P&L, setup and emotion — and the Spotter attaches a screenshot and session summary.");
-    return `<table class="tbl"><thead><tr><th>Date</th><th>Result</th><th>Dur.</th><th>P&L</th><th>Setup</th><th>Emotion</th><th>Rev.</th><th>Spotter</th></tr></thead><tbody>`+
-      all.map(t=>`<tr><td class="strong">${t.fecha.slice(5).replace("-","/")}${t.sim?' <span class="sim-badge">SIM</span>':""}</td><td><span class="pill ${t.result}">${t.result==="win"?"Won":"Lost"}</span></td><td>${t.durMin?t.durMin+"m":"—"}</td><td class="${t.pnl>0?'up':t.pnl<0?'down':''}">${t.pnl!=null?money(t.pnl):"—"}</td><td>${t.setup?(SETUPS_L[t.setup]||t.setup):"—"}</td><td>${t.emotion?(EMO_L[t.emotion]||t.emotion):"—"}</td><td>${t.revenges?'<span class="down">'+t.revenges+'</span>':"·"}</td><td>${spotCell(t.fecha)}</td></tr>`).join("")+`</tbody></table><div id="spot-modal" class="spot-modal" hidden></div>`; }
+  function viewTrades(){ ensureTradeIds(); const all=NPtrades();
+    const head=`<div class="trades-head"><button class="btn fill" data-a="tradenew" data-hover>+ Agregar trade</button></div>`;
+    const modals=`<div id="trade-modal" class="spot-modal" hidden></div><div id="spot-modal" class="spot-modal" hidden></div>`;
+    if(!all.length)return head+emptyState("Aún no hay trades. Cada sesión sellada se registra aquí — o agrega los tuyos con “+ Agregar trade”. Toca cualquier fila para editar o borrar.")+modals;
+    return head+`<table class="tbl"><thead><tr><th>Date</th><th>Result</th><th>Dur.</th><th>P&L</th><th>Setup</th><th>Emotion</th><th>Rev.</th><th>Spotter</th><th></th></tr></thead><tbody>`+
+      all.map(t=>`<tr><td class="strong">${t.fecha.slice(5).replace("-","/")}${t.sim?' <span class="sim-badge">SIM</span>':""}</td><td><span class="pill ${t.result}">${t.result==="win"?"Won":"Lost"}</span></td><td>${t.durMin?t.durMin+"m":"—"}</td><td class="${t.pnl>0?'up':t.pnl<0?'down':''}">${t.pnl!=null?money(t.pnl):"—"}</td><td>${t.setup?(SETUPS_L[t.setup]||t.setup):"—"}</td><td>${t.emotion?(EMO_L[t.emotion]||t.emotion):"—"}</td><td>${t.revenges?'<span class="down">'+t.revenges+'</span>':"·"}</td><td>${spotCell(t.fecha)}</td><td class="tr-edit" data-tedit="${esc(t.id||"")}" title="Editar / borrar">✎</td></tr>`).join("")+`</tbody></table>${modals}`; }
 
   /* AI Coach · NorthPoint logic: memory hero + KPIs + insights w/ rules + breakdowns */
   function coachGroup(arr,keyFn,labelFn){ const m={};
@@ -2368,6 +2464,7 @@
           <div class="rc-run me" data-pos="${pos.toFixed(1)}" style="left:2%;background:${ph.c}">${initials(you.u)}</div></div>
         <p class="home-note">${you.phase==="eval"?`$${toGo.toLocaleString("en-US")} of profit to clear the eval — then you're funded, and then Eden: the payout zone.`:you.phase==="funded"?"Funded. Build the buffer and your first payout opens Eden.":"Eden — you're cashing. Keep the discipline, keep withdrawing."}</p>
       </div>
+      ${seasonCard()}
       ${(()=>{ if(you.phase!=="eval")return""; const avg=avgGreen(), left=avg>0?Math.ceil(toGo/avg):null;
         return `<div class="p-card pace-card"><div class="c-t">Tu ritmo <span class="room-agg">al paso actual</span></div>
         <div class="pace-row"><div class="pace-big">${left!=null?left:"—"}<small>${left!=null?(left===1?"sesión ganada":"sesiones ganadas"):"sin datos aún"}</small></div>
@@ -2625,6 +2722,8 @@
     const sp=e.target.closest("[data-spot]"); if(sp){openSpotModal(sp.dataset.spot);return;}
     const up=e.target.closest("[data-uprofile]"); if(up&&up.dataset.uprofile){openUserProfile(up.dataset.uprofile);return;}
     if(e.target.closest("[data-spotclose]")||e.target.id==="spot-modal"){const m=document.getElementById("spot-modal");if(m){m.hidden=true;m.innerHTML="";}return;}
+    const te=e.target.closest("[data-tedit]"); if(te){tradeEdit(te.dataset.tedit);return;}
+    if(e.target.closest("[data-tradeclose]")||e.target.id==="trade-modal"){closeTradeModal();return;}
     const a=e.target.closest("[data-route]"); if(a){mostrar(a.dataset.route);return;}
     const les=e.target.closest("[data-lesson]"); if(les){courseLesson=les.dataset.lesson;mostrar("course");return;}
     if(e.target.closest("[data-back]")){courseLesson=null;mostrar("course");return;}
