@@ -960,6 +960,17 @@
   .pm-ev{display:inline-flex;align-items:center;gap:7px;font-size:.86rem;color:var(--ink)}
   .pm-none{font-size:.86rem;color:var(--ink1)}
   .pm-leak{font-size:.86rem;color:#C9A24B;margin-bottom:4px}.pm-leak b{color:#C9A24B}
+  .hm-grid{display:flex;gap:3px;overflow-x:auto;padding:4px 0}
+  .hm-col{display:flex;flex-direction:column;gap:3px}
+  .hm-cell{width:12px;height:12px;border-radius:3px;flex-shrink:0;display:inline-block}
+  .hm-none{background:rgba(244,241,234,.07)}.hm-future{background:transparent}
+  .hm-win{background:#35c46f}.hm-held{background:rgba(61,134,207,.55)}.hm-broke{background:var(--rojo)}
+  .hm-legend{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:12px;font-size:.76rem;color:var(--ink1)}
+  .hm-legend .hm-cell{margin-left:10px}
+  .room-today{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+  .rt-sub{font-size:.84rem;color:var(--ink1);margin-top:3px}
+  .rt-avs{display:flex}
+  .rt-av{width:30px;height:30px;border-radius:50%;background:#15161A;border:1px solid var(--bg);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600}
   .comm2{gap:14px}
   .room-pulse{padding:20px 22px}
   .rp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
@@ -1225,10 +1236,17 @@
       <div class="season-board">${board}</div>
       <p class="home-note">${solo?"Eres el primero de la cohorte de este mes — cada sesión que selles te sube. La sala aparece conforme el crew registra.":"Todos compiten en la misma ventana: net P&L de la temporada. Se reinicia cada mes y la disciplina es el desempate."}</p></div>`;
   }
+  /* La sala hoy: quién del crew se presentó (updated_at de hoy, real desde Supabase) */
+  function roomToday(){ const t=hoy(); return (SUPA_PROFILES||[]).filter(p=>{ const d=new Date(p.updated_at||0); return !isNaN(d.getTime())&&(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"))===t; }); }
+  function roomCard(){ const r=roomToday(); if(!r.length)return ""; const me=deviceId(), meIn=r.some(p=>p.id===me);
+    const avs=r.slice(0,10).map(p=>`<span class="rt-av" title="${esc(p.handle||"trader")}">${((p.handle||"T").trim()[0]||"T").toUpperCase()}</span>`).join("");
+    return `<div class="p-card room-today"><div class="rt-l"><div class="c-t" style="margin:0">La sala hoy</div><div class="rt-sub">${r.length} ${r.length===1?"trader se presentó":"traders se presentaron"} hoy${meIn?" · tú incluido":""}. Preséntate cada día.</div></div><div class="rt-avs">${avs}</div></div>`;
+  }
   const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
   const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   const SETUPS_L={orb:"ORB",killzone:"Killzone",smc:"SMC",emas:"EMAs",breakout:"Breakout",rev:"Reversal",otro:"Other"};
   const EMO_L={disciplina:"Disciplined",paciencia:"Patient",neutral:"Neutral",fomo:"FOMO",revancha:"Revenge",ansioso:"Anxious"};
+  const SESSIONS_L={asia:"Asia",london:"London",ny:"NY AM",nypm:"NY PM"};
 
   const hoy=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
   const hhmm=()=>{const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");};
@@ -1511,6 +1529,7 @@
   document.addEventListener("change",e=>{ if(!e.target)return;
     if(e.target.id==="ses-setup"){sessRecord({setup:e.target.value||null});}
     else if(e.target.id==="ses-emotion"){sessRecord({emotion:e.target.value||null});}
+    else if(e.target.id==="ses-session"){sessRecord({session:e.target.value||null});}
   });
 
   function mktOpen(){ try{ const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",hour:"numeric",hour12:false}).formatToParts(new Date());
@@ -1567,7 +1586,7 @@
   function NPtrades(){ return histLoad().slice().reverse().map(x=>({
     id:x.id, fecha:x.fecha, pnl:(x.pnl==null?null:x.pnl),
     result:(x.pnl>0?"win":x.pnl<0?"loss":(x.outcome==="GANADA"?"win":"loss")),
-    durMin:x.durMin||0, revenges:x.revenges||0, setup:x.setup||null, emotion:x.emotion||null, notes:x.notes||"", outcome:x.outcome, sim:!!x.sim
+    durMin:x.durMin||0, revenges:x.revenges||0, setup:x.setup||null, emotion:x.emotion||null, session:x.session||null, notes:x.notes||"", outcome:x.outcome, sim:!!x.sim
   })); }
   function uid(){ return "t_"+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4); }
   function ensureTradeIds(){ const h=histLoad(); let ch=false; h.forEach(x=>{ if(!x.id){ x.id=uid(); ch=true; } }); if(ch)histSave(h); return h; }
@@ -1590,6 +1609,7 @@
         <label>Duración (min)<input id="td-dur" type="number" min="0" placeholder="0" value="${rec.durMin||""}"></label>
         <label>Setup<select id="td-setup"><option value="">—</option>${setups.map(k=>`<option value="${k}"${rec.setup===k?" selected":""}>${SETUPS_L[k]}</option>`).join("")}</select></label>
         <label>Emoción<select id="td-emo"><option value="">—</option>${emos.map(k=>`<option value="${k}"${rec.emotion===k?" selected":""}>${EMO_L[k]}</option>`).join("")}</select></label>
+        <label>Sesión<select id="td-session"><option value="">—</option>${Object.keys(SESSIONS_L).map(k=>`<option value="${k}"${rec.session===k?" selected":""}>${SESSIONS_L[k]}</option>`).join("")}</select></label>
         <label class="td-rev"><input id="td-rev" type="checkbox"${rec.revenges?" checked":""}> Fue revenge / rompiste la disciplina</label>
       </div>
       <textarea id="td-notes" class="home-editor" placeholder="qué viste, qué sentiste, qué mejorar…">${esc(rec.notes||"")}</textarea>
@@ -1607,6 +1627,7 @@
     const rec={ id:EDITING_TRADE||uid(), fecha, outcome:res==="win"?"GANADA":"BLOQUEADO",
       pnl:isNaN(pnlV)?null:pnlV, durMin:isNaN(durV)?null:durV,
       setup:(g("td-setup")&&g("td-setup").value)||null, emotion:(g("td-emo")&&g("td-emo").value)||null,
+      session:(g("td-session")&&g("td-session").value)||null,
       revenges:(g("td-rev")&&g("td-rev").checked)?1:0, notes:(g("td-notes")&&g("td-notes").value)||"", sim:false };
     const h=histLoad(); const i=h.findIndex(x=>x.id===rec.id);
     if(i>=0)Object.assign(h[i],rec); else h.push(rec);
@@ -1708,6 +1729,21 @@
     const labels=ax.map((a,i)=>{const [x,y]=pt(i,R+17);return `<text x="${x.toFixed(1)}" y="${(y+3).toFixed(1)}" text-anchor="middle" fill="rgba(244,241,234,.55)" font-size="8.2" font-family="inherit" letter-spacing=".4">${a.l}</text>`;}).join("");
     return `<svg viewBox="0 0 176 172" class="radar">${ring(R)+ring(R*.66)+ring(R*.33)+spokes+shape+dots+labels}</svg>`;
   }
+  /* Heatmap de disciplina — cada cuadro es un día, coloreado por cómo lo cerraste */
+  function disciplineHeatmap(){ const WEEKS=18, byDate={};
+    histLoad().filter(x=>x.outcome&&!x.sim).forEach(x=>{ byDate[x.fecha]=x; });
+    const cellState=iso=>{ const r=byDate[iso]; if(!r)return "none"; if(r.revenges)return "broke"; return r.outcome==="GANADA"?"win":"held"; };
+    const today=new Date(); today.setHours(0,0,0,0);
+    const start=new Date(today); start.setDate(today.getDate()-((WEEKS-1)*7+today.getDay()));
+    let cols="";
+    for(let w=0;w<WEEKS;w++){ let cells="";
+      for(let d=0;d<7;d++){ const dt=new Date(start); dt.setDate(start.getDate()+w*7+d);
+        const iso=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
+        cells+=`<span class="hm-cell hm-${dt>today?"future":cellState(iso)}" title="${iso}"></span>`; }
+      cols+=`<div class="hm-col">${cells}</div>`; }
+    return `<div class="p-card hm-card"><div class="c-t">Disciplina · últimos 4 meses <span class="room-agg">cada cuadro es un día</span></div>
+      <div class="hm-grid">${cols}</div>
+      <div class="hm-legend"><span class="hm-cell hm-win"></span>Win limpio<span class="hm-cell hm-held"></span>Stop respetado<span class="hm-cell hm-broke"></span>Revenge<span class="hm-cell hm-none"></span>Sin operar</div></div>`; }
   function viewDashboard(){ const all=NPtrades(); if(!all.length)return emptyState("No sealed trades yet. Close your first session and your real dashboard shows up here: equity, win rate, profit factor, expectancy — nothing made up.");
     const st=NPstats(all),cum=NPcumulative(all),byday=all.filter(t=>t.pnl!=null).map(t=>t.pnl);
     const bs=bulletScore(st,all);
@@ -1729,7 +1765,7 @@
       <div class="p-card"><div class="c-t">Daily net cumulative P&L</div>${areaChart(cum,st.net>=0?"#35c46f":"#d6493f",185)}</div>
       <div class="p-card"><div class="c-t">Net daily P&L</div>${barChart(byday,185)}</div>
     </div>`;
-    return tiles+mid+`
+    return tiles+mid+`<div style="margin-top:18px">${disciplineHeatmap()}</div>
     <div class="p-card" style="margin-top:18px"><div class="c-t">${MONTHS[Number(calMonth.slice(5))-1]}</div>${calendarFull(calMonth)}</div>
     <div class="p-card" style="margin-top:18px"><div class="c-t">Recent trades</div>
       <table class="tbl"><thead><tr><th>Date</th><th>Result</th><th>Dur.</th><th>P&L</th><th>Setup</th></tr></thead><tbody>
@@ -1771,6 +1807,13 @@
       out.push({tone:"good",title:`Your most profitable setup: ${b.label}`,
         text:`${money(b.net)} across ${b.n} trades · ${b.winRate}% win · PF ${pf_txt(b.profitFactor)}.`,
         rule:`Prioritize ${b.label} — the one bullet goes to your A+ setup only.`});}
+    const sess=coachGroup(all.filter(t=>t.session),t=>t.session,k=>SESSIONS_L[k]||k).filter(r=>r.n>=2).sort((a,b)=>b.net-a.net);
+    if(sess.length&&sess[0].net>0){const b=sess[0];
+      out.push({tone:"good",title:`Your best window: ${b.label}`,
+        text:`${money(b.net)} across ${b.n} trades · ${b.winRate}% win. This is where your edge lives.`,
+        rule:`Aim your bullet at the ${b.label} session.`});
+      const w=sess[sess.length-1]; if(sess.length>1&&w.net<0)
+        out.push({tone:"bad",title:`${w.label} is costing you`,text:`${money(w.net)} across ${w.n} trades. Consider sitting out that window.`,rule:`No bullet in the ${w.label} session unless it's a clear A+.`});}
     const emos=coachGroup(all.filter(t=>t.emotion),t=>t.emotion,k=>EMO_L[k]||k).filter(r=>r.n>=2&&r.net<0).sort((a,b)=>a.net-b.net);
     if(emos.length){const e=emos[0];
       out.push({tone:"bad",title:`"${e.label}" costs you $${Math.round(Math.abs(e.net)).toLocaleString("en-US")}`,
@@ -1813,6 +1856,7 @@
     const cl=all.filter(t=>t.pnl!=null);
     const breakdowns=`<div class="p-grid">
       ${coachBreakdown("By setup",coachGroup(cl.filter(t=>t.setup),t=>t.setup,k=>SETUPS_L[k]||k))}
+      ${coachBreakdown("By session",coachGroup(cl.filter(t=>t.session),t=>t.session,k=>SESSIONS_L[k]||k))}
       ${coachBreakdown("By emotion",coachGroup(cl.filter(t=>t.emotion),t=>t.emotion,k=>EMO_L[k]||k))}
       ${coachBreakdown("By day of week",coachGroup(cl,wdOf,k=>WD[k]),(a,b)=>Number(a.key)-Number(b.key))}
       ${coachBreakdown("By result duration",coachGroup(cl.filter(t=>t.durMin),t=>t.durMin<=10?"s":"l",k=>k==="s"?"Quick (≤10m)":"Extended (>10m)"))}</div>`;
@@ -2318,6 +2362,7 @@
           <label>Result $ <input id="ses-pnl" type="number" inputmode="decimal" placeholder="0" value="${rec.pnl!=null?rec.pnl:""}"></label>
           <label>Setup <select id="ses-setup"><option value="">—</option><option value="orb"${rec.setup==="orb"?" selected":""}>ORB</option><option value="killzone"${rec.setup==="killzone"?" selected":""}>Killzone</option><option value="smc"${rec.setup==="smc"?" selected":""}>SMC</option><option value="emas"${rec.setup==="emas"?" selected":""}>EMAs</option><option value="breakout"${rec.setup==="breakout"?" selected":""}>Breakout</option><option value="rev"${rec.setup==="rev"?" selected":""}>Reversal</option><option value="otro"${rec.setup==="otro"?" selected":""}>Other</option></select></label>
           <label>Emotion <select id="ses-emotion"><option value="">—</option><option value="disciplina"${rec.emotion==="disciplina"?" selected":""}>Disciplined</option><option value="paciencia"${rec.emotion==="paciencia"?" selected":""}>Patient</option><option value="neutral"${rec.emotion==="neutral"?" selected":""}>Neutral</option><option value="fomo"${rec.emotion==="fomo"?" selected":""}>FOMO</option><option value="revancha"${rec.emotion==="revancha"?" selected":""}>Revenge</option><option value="ansioso"${rec.emotion==="ansioso"?" selected":""}>Anxious</option></select></label>
+          <label>Session <select id="ses-session"><option value="">—</option>${Object.keys(SESSIONS_L).map(k=>`<option value="${k}"${rec.session===k?" selected":""}>${SESSIONS_L[k]}</option>`).join("")}</select></label>
         </div>
         <textarea id="ses-notes" class="home-editor" placeholder="what you saw, what you felt, what to improve…">${esc(rec.notes||"")}</textarea></div>`}
       <div class="sl-actions">
@@ -2575,6 +2620,7 @@
         <div class="pace-row"><div class="pace-big">${left!=null?left:"—"}<small>${left!=null?(left===1?"sesión ganada":"sesiones ganadas"):"sin datos aún"}</small></div>
           <div class="pace-meta"><div>Falta <b>$${toGo.toLocaleString("en-US")}</b> para pasar el eval</div><div>Promedio por win: <b class="up">${avg>0?money(Math.round(avg)):"—"}</b></div></div></div>
         <p class="home-note">${left!=null?"Estimado honesto con tu promedio de wins — no es garantía. Mantén la disciplina y el número baja solo.":"Sella algunas sesiones ganadas y el Spotter calcula tu ritmo para pasar."}</p></div>`; })()}
+      ${roomCard()}
       <div class="p-card"><div class="c-t">The room race</div>${buildRace()}</div>
       <div class="kpis">
         <div class="kpi"><div class="k-l">Accounts</div><div class="k-v">${accts.length||1}</div></div>
