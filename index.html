@@ -877,6 +877,13 @@
   .lb-cta{opacity:.9;margin-left:2px;text-decoration:underline}
   @keyframes lbin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
   @keyframes lbpulse{0%,100%{opacity:1}50%{opacity:.25}}
+  .lead{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+  .lead-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:9px;font-size:.9rem}
+  .lead-row.me{background:rgba(61,134,207,.12);border:1px solid rgba(61,134,207,.3)}
+  .lead-rk{width:34px;color:var(--ink2);font-variant-numeric:tabular-nums;font-size:.8rem}
+  .lead-nm{flex:1;color:var(--ink1)}.lead-nm em{color:var(--accent);font-style:normal;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin-left:6px}
+  .lead-row.me .lead-nm{color:var(--ink)}
+  .lead-el{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink)}
   .tbl td{padding:12px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;color:var(--ink1)}
   .tbl td.strong{color:var(--ink);font-family:var(--serif);font-size:.98rem}
   .tbl tr:hover td{background:rgba(244,241,234,.02)}
@@ -1309,7 +1316,7 @@
   /* ---------- events ---------- */
   document.addEventListener("click",e=>{
     const b=e.target.closest("button[data-a]");if(!b)return;
-    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,addinvest:addInvest,replayonb:startOnb,createlobby:battleLobby,practicenow:practiceNow,joinrace:()=>{raceJoin();mostrar("comunidad");},tbnew:tbNew,tblong:()=>tbAct("long"),tbshort:()=>tbAct("short"),tbclose:()=>tbAct("close"),tbnext:tbNext,tbback:tbBack,logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
+    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,addinvest:addInvest,replayonb:startOnb,createlobby:battleLobby,practicenow:practiceNow,joinrace:()=>{raceJoin();mostrar("comunidad");},trainstart:trainStart,trainend:trainEnd,trainwon:()=>trainSeal("won"),trainlost:()=>trainSeal("lost"),logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
   });
   document.addEventListener("input",e=>{ if(!e.target)return;
     if(ONB&&e.target.id&&e.target.id.startsWith("onb-")){ const d=ONB.data, id=e.target.id, v=e.target.value;
@@ -1345,7 +1352,8 @@
   function tick(){const c=$("#clock");if(c)c.textContent=String(new Date().getHours()).padStart(2,"0")+":"+String(new Date().getMinutes()).padStart(2,"0")+":"+String(new Date().getSeconds()).padStart(2,"0");
     const mk=$("#mkt"); if(mk){const o=mktOpen(); mk.classList.toggle("closed",!o); mk.innerHTML=`<i></i> Market ${o?"open":"closed"}`;}
     const st=$("#sl-time"); if(st){const s=sessLoad(); if(s.startedAt&&s.phase==="live"){const ms=Date.now()-s.startedAt,m=Math.floor(ms/60000),sec=Math.floor(ms/1000)%60;st.textContent=m+"m "+String(sec).padStart(2,"0")+"s";}}
-    const tt=$("#sl-trade"); if(tt){const s=sessLoad(); if(s.firedAt&&s.phase==="fired"){const ms=Date.now()-s.firedAt,m=Math.floor(ms/60000),sec=Math.floor(ms/1000)%60;tt.textContent=m+"m "+String(sec).padStart(2,"0")+"s";}}}
+    const tt=$("#sl-trade"); if(tt){const s=sessLoad(); if(s.firedAt&&s.phase==="fired"){const ms=Date.now()-s.firedAt,m=Math.floor(ms/60000),sec=Math.floor(ms/1000)%60;tt.textContent=m+"m "+String(sec).padStart(2,"0")+"s";}}
+    const tr=$("#tr-time"); if(tr){const t=tLoad(); if(t.startedAt&&t.phase==="live"){const ms=Date.now()-t.startedAt,m=Math.floor(ms/60000),sec=Math.floor(ms/1000)%60;tr.textContent=m+"m "+String(sec).padStart(2,"0")+"s";}}}
   setInterval(tick,1000);tick();
 
 
@@ -2046,29 +2054,53 @@
     const yy=TB.you, eL=yy.pos?`<line x1="0" x2="${W}" y1="${y(yy.entry).toFixed(1)}" y2="${y(yy.entry).toFixed(1)}" stroke="#3d86cf" stroke-width="1" stroke-dasharray="5 4"/>`:"";
     return `<svg class="tb-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${eL}${cndl}</svg>`;
   }
+  function tLoad(){try{return JSON.parse(localStorage.getItem("candado_training"))||{phase:"ready"};}catch(e){return{phase:"ready"};}}
+  function tSave(t){try{localStorage.setItem("candado_training",JSON.stringify(t));}catch(e){}}
+  function trainStart(){ tSave({phase:"live",startedAt:Date.now()});
+    try{window.open(TV_URL,"_blank","noopener");}catch(e){}                 // abre TradingView (cuenta paper)
+    try{ if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.spotter){ window.webkit.messageHandlers.spotter.postMessage(JSON.stringify(spotterSnapshot())); } }catch(e){} // el Spotter vigila y registra
+    mostrar("training"); }
+  function trainEnd(){ const t=tLoad(); if(t.phase!=="live")return; t.phase="done"; t.endedAt=Date.now(); t.durMin=Math.max(1,Math.round((t.endedAt-t.startedAt)/60000)); tSave(t); mostrar("training"); }
+  function trainSeal(outcome){ const r=eloLoad(); const d=outcome==="won"?20:-16; r.elo=Math.max(800,r.elo+d); if(outcome==="won")r.w++; else r.l++; eloSave(r);
+    const t=tLoad(); try{const log=JSON.parse(localStorage.getItem("candado_trainlog")||"[]"); log.unshift({fecha:hoy(),durMin:t.durMin||null,outcome,elo:r.elo}); localStorage.setItem("candado_trainlog",JSON.stringify(log.slice(0,50)));}catch(e){}
+    tSave({phase:"ready"}); mostrar("training"); }
+  function trainBoard(r){
+    const you={name:(profileLoad()||{}).handle||"you", elo:r.elo, you:true};
+    const crew=[["NY_killer",42],["liq_hunter",-31],["one_shot",63],["asia_range",-58],["fvg_god",95]]
+      .map(([n,dd])=>({name:n,elo:Math.max(800,r.elo+dd),you:false})).concat([you]).sort((a,b)=>b.elo-a.elo);
+    return `<div class="p-card"><div class="c-t">Leaderboard <span class="room-agg">Elo · you vs the crew</span></div>
+      <div class="lead">${crew.map((m,i)=>`<div class="lead-row ${m.you?'me':''}"><span class="lead-rk">#${i+1}</span><span class="lead-nm">${esc(m.name)}${m.you?' <em>you</em>':''}</span><span class="lead-el">${m.elo}</span></div>`).join("")}</div>
+      <p class="home-note">Sample crew — real 1v1s and live ranks turn on with the community backend.</p></div>`;
+  }
   function viewTraining(){
-    const r=eloLoad();
-    if(TB) return tbView();
+    const t=tLoad(), r=eloLoad();
+    if(t.phase==="live"){
+      return `<div class="training"><div class="p-card sl-top"><div class="sl-status"><span class="sl-dot fired"></span> Training live · <b>paper</b> · the Spotter is recording</div><div class="sl-time" id="tr-time">0m 00s</div></div>
+        <div class="p-card"><h2 class="sr-h" style="font-size:1.7rem">Trade your <em>paper account.</em></h2>
+          <p class="sr-p">TradingView is open with your paper account and the clock is running. Take your reps — the Spotter watches and grades the session. When you're done, hit <b>End training</b>.</p>
+          <div class="sl-actions"><a class="btn" href="${TV_URL}" target="_blank" rel="noopener" data-hover>Open charts →</a><button class="btn fill" data-a="trainend" data-hover>End training</button></div></div>
+        ${trainBoard(r)}</div>`;
+    }
+    if(t.phase==="done"){
+      const sp=spotLoad()[hoy()], grade=sp&&sp.grade!=null?sp.grade:null, dur=t.durMin?`${t.durMin} min`:"—";
+      return `<div class="training"><div class="p-card"><div class="sr-eyebrow">Training · session done</div>
+        <h2 class="sr-h" style="font-size:1.8rem">Reps done — <em>${dur}</em>.</h2>
+        ${grade!=null?`<p class="sr-p">The Spotter graded this session <b>${grade}/100</b>. Log the result to move your Elo.</p>`
+          :`<p class="sr-p">How did it go? Log it to move your Elo.${window.webkit?"":' <span class="home-note" style="display:inline">With the live Spotter, the grade comes in on its own.</span>'}</p>`}
+        <div class="sl-actions"><button class="btn up-btn" data-a="trainwon" data-hover>Won it</button><button class="btn dn-btn" data-a="trainlost" data-hover>Missed it</button></div></div>
+        ${trainBoard(r)}</div>`;
+    }
     return `<div class="training">
-      <div class="p-card sr-hero"><div class="sr-eyebrow">1v1 · you vs the bot</div>
-        <h2 class="sr-h">Same replay. Same capital. <em>Best P&L wins.</em></h2>
-        <p class="sr-p">Load a blind replay of a session and trade it out against the bot — neither of you knows what comes next. Better P&L at the buzzer takes the Elo.</p>
-        <div class="sl-actions"><button class="btn fill lg" data-a="tbnew" data-hover>▶ Play the bot</button></div></div>
-      <div class="battle-grid">
-        <div class="p-card rank-card"><div class="c-t">Your rank</div>
-          <div class="rk-elo">${r.elo}</div><div class="rk-sub">Elo · ${r.w+r.l?`${r.w}W · ${r.l}L`:"unranked"}</div></div>
-        <div class="p-card"><div class="c-t">Private lobby · a friend</div>
-          <p class="home-p">Create a room and battle a friend on the same replay.</p>
-          ${BATTLE.lobby
-            ?`<div class="lobby-code">${BATTLE.lobby}</div><div class="sl-actions"><a class="btn" href="${DISCORD}" target="_blank" rel="noopener" data-hover>Share the code →</a><button class="btn ghost" data-a="createlobby" data-hover>New code</button></div>`
-            :`<button class="btn" data-a="createlobby" data-hover>Create lobby</button>`}
-          <p class="home-note">Live friend matches turn on with the community backend.</p></div>
-      </div>
-      <div class="p-card"><div class="c-t">How a battle works</div>
+      <div class="p-card sr-hero"><div class="sr-eyebrow">Training · paper trading</div>
+        <h2 class="sr-h">Practice for real. <em>The Spotter keeps score.</em></h2>
+        <p class="sr-p">Opens TradingView with a <b>paper account</b> and a running clock. You trade it out; the <b>Spotter watches and grades every session</b> — and that's what moves your Elo. No risk, real reps.</p>
+        <div class="sl-actions"><button class="btn fill lg" data-a="trainstart" data-hover>▶ Start training</button></div></div>
+      ${trainBoard(r)}
+      <div class="p-card"><div class="c-t">How it works</div>
         <div class="vs-grid">
-          <div class="vs-step"><b>1 · Same blind replay</b><p>You and the bot load the identical historical chart — neither knows what's next.</p></div>
-          <div class="vs-step"><b>2 · Trade the tape</b><p>Go long or short, manage the trade, close it. Advance the candles one by one.</p></div>
-          <div class="vs-step"><b>3 · Buzzer</b><p>Best P&L at the final candle wins the match and moves your Elo.</p></div>
+          <div class="vs-step"><b>1 · Paper account</b><p>TradingView opens with paper trading — real charts, zero risk.</p></div>
+          <div class="vs-step"><b>2 · Timed reps</b><p>The clock runs. Take your trade, manage it, close it — like a live session.</p></div>
+          <div class="vs-step"><b>3 · Spotter scores it</b><p>The Spotter grades your session and that result moves your Elo on the board.</p></div>
         </div></div>
     </div>`;
   }
@@ -2263,7 +2295,7 @@
     course:{t:"Course",s:"the TJR Boot Camp · 30 days",f:viewCourseRouter},
     comunidad:{t:"Community",s:"the room, racing to payout",f:viewComunidad},
     sesion:{t:"Start Session",s:"one bullet · live",f:viewSession},
-    training:{t:"Training",s:"1v1 battles · best P&L wins",f:viewTraining},
+    training:{t:"Training",s:"paper trading · timed · the Spotter scores it",f:viewTraining},
     dashboard:{t:"Dashboard",s:"your real trading",f:viewDashboard},
     trades:{t:"Trades",s:"session log",f:viewTrades},
     coach:{t:"AI Coach",s:"what your data sees",f:viewCoach},
