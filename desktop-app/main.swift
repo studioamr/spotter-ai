@@ -6,6 +6,7 @@ import UserNotifications
 class Delegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, UNUserNotificationCenterDelegate {
     var window: NSWindow!
     var webView: WKWebView!
+    var statusItem: NSStatusItem?
 
     func applicationDidFinishLaunching(_ n: Notification) {
         let rect = NSRect(x: 0, y: 0, width: 1280, height: 840)
@@ -21,6 +22,7 @@ class Delegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDeleg
         let cfg = WKWebViewConfiguration()
         let ucc = WKUserContentController()
         ucc.add(self, name: "spotter")     // puente: el botón Start Session lanza el Spotter
+        ucc.add(self, name: "status")      // puente: estado de sesión → Spotter de la barra de menú
         cfg.userContentController = ucc
         webView = WKWebView(frame: rect, configuration: cfg)
         webView.navigationDelegate = self
@@ -35,8 +37,32 @@ class Delegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDeleg
         }
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        setupStatusItem()    // Spotter en la barra de menú (siempre visible)
         startLive()          // consulta periódica del estado EN VIVO
         scheduleReminders()  // recordatorios (apertura de Nueva York)
+    }
+
+    // Spotter de la barra de menú: refleja el estado de tu sesión aunque la ventana esté cerrada/atrás.
+    func setupStatusItem() {
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        if let btn = item.button {
+            btn.title = "◉ SPOTTER"
+            btn.font = NSFont.systemFont(ofSize: 12, weight: .medium)
+        }
+        let menu = NSMenu()
+        menu.addItem(withTitle: "Abrir SPOTTER AI", action: #selector(openApp), keyEquivalent: "")
+        menu.addItem(withTitle: "Empieza tu sesión", action: #selector(openApp), keyEquivalent: "")
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(withTitle: "Salir de SPOTTER AI", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "")
+        item.menu = menu
+        statusItem = item
+    }
+    @objc func openApp() {
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+    func updateStatus(_ s: String) {
+        DispatchQueue.main.async { self.statusItem?.button?.title = s.isEmpty ? "◉ SPOTTER" : s }
     }
 
     // Recordatorios nativos: te avisa aunque la app esté cerrada.
@@ -119,6 +145,7 @@ class Delegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDeleg
     // Start Session pide lanzar el Spotter (Claude Code vigilando la pantalla)
     func userContentController(_ u: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "spotter" { launchSpotter(profile: message.body as? String ?? "") }
+        else if message.name == "status" { updateStatus(message.body as? String ?? "") }
     }
     func launchSpotter(profile: String) {
         guard let res = Bundle.main.resourceURL else { return }

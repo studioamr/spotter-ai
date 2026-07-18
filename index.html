@@ -914,6 +914,32 @@
   .wb-r{display:flex;gap:8px;flex-wrap:wrap}
   .wb-chip{font-size:.78rem;font-variant-numeric:tabular-nums;color:var(--ink1);background:#000;border:1px solid var(--line);border-radius:999px;padding:5px 11px}
   .wb-chip.up{color:#35c46f}.wb-chip.down{color:var(--rojo)}
+  .wb-chip.leak{color:#C9A24B;border-color:rgba(201,162,75,.4);background:rgba(201,162,75,.08)}
+  .tilt-warn{background:rgba(214,73,63,.09);border-color:rgba(214,73,63,.45);color:var(--ink);font-size:.9rem;line-height:1.5;padding:14px 18px}
+  .tilt-warn b{color:var(--rojo)}
+  .pace-card{background:rgba(61,134,207,.05);border-color:rgba(61,134,207,.2)}
+  .pace-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:6px 0 4px}
+  .pace-big{font-family:var(--serif);font-size:3.4rem;line-height:1;color:var(--accent);display:flex;align-items:baseline;gap:10px}
+  .pace-big small{font-family:var(--sans);font-size:.9rem;color:var(--ink1);font-weight:500}
+  .pace-meta{display:flex;flex-direction:column;gap:5px;font-size:.92rem;color:var(--ink1)}.pace-meta b{color:var(--ink)}
+  .risk-calc{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:.92rem;color:var(--ink1);font-variant-numeric:tabular-nums}.risk-calc b{color:var(--ink)}
+  .comm2{gap:14px}
+  .room-pulse{padding:20px 22px}
+  .rp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .rp-k{font-size:.6rem;text-transform:uppercase;letter-spacing:.22em;color:var(--accent)}
+  .rp-h{font-family:var(--serif);font-weight:400;font-size:2.1rem;line-height:1;margin-top:5px}
+  .rp-stats{display:flex;gap:26px;margin-top:18px}
+  .rp-stat b{font-family:var(--serif);font-size:1.7rem;display:block;line-height:1}.rp-stat b.up{color:#35c46f}
+  .rp-stat span{font-size:.58rem;text-transform:uppercase;letter-spacing:.14em;color:var(--ink2)}
+  .live-sess{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit}
+  .ls-dot{width:9px;height:9px;flex:none;border-radius:50%;background:var(--rojo);box-shadow:0 0 0 0 rgba(214,73,63,.5);animation:lbpulse 1.6s infinite}
+  .ls-b{flex:1}.ls-b b{font-size:.94rem}.ls-b p{font-size:.78rem;color:var(--ink2);margin-top:2px;line-height:1.4}
+  .ls-go{color:var(--accent);font-size:.84rem;font-weight:600;flex:none}
+  .wall-card{padding:16px 18px}
+  .wall-empty{color:var(--ink2);font-size:.9rem;line-height:1.5;padding:8px 2px}.wall-empty b{color:var(--ink1)}
+  .inv-strip{width:100%;background:rgba(61,134,207,.07);border:1px dashed rgba(61,134,207,.3);border-radius:12px;color:var(--ink1);font-family:var(--sans);font-size:.86rem;padding:14px;cursor:pointer;transition:all .2s}
+  .inv-strip:hover{background:rgba(61,134,207,.12)}
+  .inv-plus{color:var(--accent);font-weight:700;margin-right:4px}
   .pf-stat{background:var(--bg1);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
   .pf-sv{font-family:var(--serif);font-size:1.5rem;line-height:1}.pf-sv.up{color:#35c46f}.pf-sv.down{color:var(--rojo)}
   .pf-sl{font-size:.58rem;text-transform:uppercase;letter-spacing:.13em;color:var(--ink2);margin-top:6px}
@@ -1390,7 +1416,7 @@
   /* ---------- events ---------- */
   document.addEventListener("click",e=>{
     const b=e.target.closest("button[data-a]");if(!b)return;
-    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,addinvest:addInvest,replayonb:startOnb,createlobby:battleLobby,practicenow:practiceNow,joinrace:()=>{raceJoin();mostrar("comunidad");},trainstart:trainStart,trainend:trainEnd,trainwon:()=>trainSeal("won"),trainlost:()=>trainSeal("lost"),copyamr:myPlanCopyAMR,spkr:spkToggle,wallpost:()=>{const i=$("#wall-input"),v=i&&i.value.trim();if(v){supaPost(v);if(i)i.value="";}},invite:()=>{try{window.open("https://wa.me/?text="+encodeURIComponent("Prueba SPOTTER AI conmigo — la plataforma de trading con disciplina: https://studioamr.github.io/spotter-ai/landing.html"),"_blank");}catch(e){}},logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
+    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,shareshot:sealPoster,addinvest:addInvest,replayonb:startOnb,createlobby:battleLobby,practicenow:practiceNow,joinrace:()=>{raceJoin();mostrar("progreso");},trainstart:trainStart,trainend:trainEnd,trainwon:()=>trainSeal("won"),trainlost:()=>trainSeal("lost"),copyamr:myPlanCopyAMR,spkr:spkToggle,wallpost:()=>{const i=$("#wall-input"),v=i&&i.value.trim();if(v){supaPost(v);if(i)i.value="";}},invite:()=>{try{window.open("https://wa.me/?text="+encodeURIComponent("Prueba SPOTTER AI conmigo — la plataforma de trading con disciplina: https://studioamr.github.io/spotter-ai/landing.html"),"_blank");}catch(e){}},logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
   });
   document.addEventListener("input",e=>{ if(!e.target)return;
     if(ONB&&e.target.id&&e.target.id.startsWith("onb-")){ const d=ONB.data, id=e.target.id, v=e.target.value;
@@ -1885,7 +1911,7 @@
     const fy=[
       {t:"Start your session", s:"Premarket together, one bullet, live monitoring", btn:"Start", go:"sesion"},
       {t:cdone?"Continue the course":"Start the course", s:`${cpct}% complete · ${cdone}/${lc.length} lessons`, btn:"Academy", go:"course"},
-      {t:"The community race", s:"Announcements, PNLs and the race to payout", btn:"Community", go:"comunidad"},
+      {t:"Your race to payout", s:"See where you stand · eval → funded → eden", btn:"Progress", go:"progreso"},
       {t:"Your dashboard", s:"Equity curve, win rate and your real stats", btn:"Dashboard", go:"dashboard"},
     ];
     const forYou=`<div class="fy-grid">${fy.map(c=>`<div class="fy-card"><div class="fy-main"><div class="fy-t">${c.t}</div><div class="fy-s">${c.s}</div></div><button class="btn" data-go="${c.go}" data-hover>${c.btn} →</button></div>`).join("")}</div>`;
@@ -1928,15 +1954,22 @@
       };
     }catch(e){ return {handle:"trader"}; }
   }
-  function startSession(){ sessSave({phase:"live",startedAt:Date.now(),sim:sesModeLoad()==="sim"});
+  /* puente al Spotter de la barra de menú (app nativa); no-op en web */
+  function statusLabel(kind){ return ({ready:"◉ 1 bala lista",live:"◉ Sesión · en la mira",fired:"● En el aire",won:"✓ Tiro limpio",lost:"— Día cerrado",flat:"— Sin disparo"})[kind]||"SPOTTER AI"; }
+  function statusPush(kind){ try{ if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.status){ window.webkit.messageHandlers.status.postMessage(statusLabel(kind)); } }catch(e){} }
+  function startSession(){ const already=sesModeLoad()!=="sim"&&todaySealed();
+    sessSave({phase:"live",startedAt:Date.now(),sim:sesModeLoad()==="sim"});
     try{window.open(TV_URL,"_blank","noopener");}catch(e){} // abre tu TradingView
     // en la app nativa: manda tu perfil + lanza el Spotter (Claude Code vigilando tu pantalla)
     try{ if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.spotter){ window.webkit.messageHandlers.spotter.postMessage(JSON.stringify(spotterSnapshot())); } }catch(e){}
-    spkr("Listo, "+spotName()+". Una sola bala hoy. Tu setup A más, stop al uno por ciento. Respira y espera tu entrada.");
+    statusPush("live");
+    // guardián de una-bala: si ya sellaste hoy, esto es revenge/sobre-operar → te frena
+    if(already){ spkr("Ojo, "+spotName()+". Ya disparaste tu bala hoy y "+(already.outcome==="GANADA"?"la ganaste. No regreses por más — cierra en verde.":"la perdiste. Esto es revenge: cierra la plataforma y vuelve mañana en frío.")); }
+    else spkr(spotBrief());
     mostrar("sesion"); }
   function practiceNow(){ sesModeSave("sim"); mostrar("sesion"); }
   const simBadge=s=>s.sim?`<span class="sim-badge">SIM · practice</span>`:"";
-  function fireBullet(){ const s=sessLoad(); if(s.phase!=="live")return; s.phase="fired"; s.firedAt=Date.now(); sessSave(s); spkr("Bala disparada. Ahora administra el trade. No muevas tu stop. Cierra cuando toque."); mostrar("sesion"); }
+  function fireBullet(){ const s=sessLoad(); if(s.phase!=="live")return; s.phase="fired"; s.firedAt=Date.now(); sessSave(s); statusPush("fired"); spkr("Bala disparada. Ahora administra el trade. No muevas tu stop. Cierra cuando toque."); mostrar("sesion"); }
   function sessRecord(patch){ // upsert today's trade into the journal — SIM and LIVE keep separate records
     const sim=!!sessLoad().sim;
     const h=histLoad(); let rec=h.find(x=>x.fecha===hoy()&&!!x.sim===sim);
@@ -1945,12 +1978,47 @@
   }
   function wonSession(){ const s=sessLoad(); s.phase="done"; s.result="won"; s.endedAt=Date.now();
     s.tradeMin=s.firedAt?Math.max(1,Math.round((s.endedAt-s.firedAt)/60000)):null; sessSave(s);
-    sessRecord({outcome:"GANADA",durMin:s.tradeMin,sim:!!s.sim}); supaUpsert(); spkr("Buen tiro. Sellaste tu sesión con disciplina. Cierra la plataforma por hoy."); mostrar("sesion"); }
+    sessRecord({outcome:"GANADA",durMin:s.tradeMin,sim:!!s.sim}); supaUpsert(); statusPush("won"); { const r=stats().racha; spkr("Buen tiro. Sellaste tu sesión con disciplina"+(r>=2?", "+r+" seguidas limpias":"")+". Cierra la plataforma por hoy."); } mostrar("sesion"); }
   function lostSession(){ const s=sessLoad(); s.phase="done"; s.result="lost"; s.endedAt=Date.now();
     s.tradeMin=s.firedAt?Math.max(1,Math.round((s.endedAt-s.firedAt)/60000)):null; sessSave(s);
-    sessRecord({outcome:"BLOQUEADO",durMin:s.tradeMin,sim:!!s.sim}); supaUpsert(); spkr("Se acabó el día. Cierra la plataforma y vuelve mañana en frío. No caces revenge."); mostrar("sesion"); }
-  function endSession(){ const s=sessLoad(); s.phase="done"; s.result=s.result||"flat"; s.endedAt=Date.now(); sessSave(s); mostrar("sesion"); }
-  function newSession(){ sessSave({phase:"ready"}); mostrar("sesion"); }
+    sessRecord({outcome:"BLOQUEADO",durMin:s.tradeMin,sim:!!s.sim}); supaUpsert(); statusPush("lost"); spkr("Se acabó el día. Una bala, la respetaste. Cierra la plataforma y vuelve mañana en frío. No caces revenge."); mostrar("sesion"); }
+  function endSession(){ const s=sessLoad(); s.phase="done"; s.result=s.result||"flat"; s.endedAt=Date.now(); sessSave(s); statusPush("flat"); mostrar("sesion"); }
+  function newSession(){ sessSave({phase:"ready"}); statusPush("ready"); mostrar("sesion"); }
+  /* ---------- Shareable sealed-session poster (editorial 1/1) ---------- */
+  function sealEdition(){ return histLoad().filter(x=>x.outcome&&!x.sim).length; }
+  const MESES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  function fmtHuman(f){ const p=(f||"").split("-").map(Number); if(p.length<3)return f||""; return p[2]+" "+(MESES[p[1]-1]||"")+" "+p[0]; }
+  function posterWrap(g,txt,x,y,maxW,lh){ const words=String(txt).split(" "); let line="",yy=y; for(const w of words){ const t=line?line+" "+w:w; if(g.measureText(t).width>maxW&&line){ g.fillText(line,x,yy); line=w; yy+=lh; } else line=t; } if(line)g.fillText(line,x,yy); return yy; }
+  function posterStat(g,x,y,label,val,color){ g.textAlign="left"; g.fillStyle="rgba(244,241,234,.5)"; g.font="600 24px 'Inter Tight',sans-serif"; g.fillText(label,x,y); g.fillStyle=color; g.font="400 82px 'Hoefler Text',Georgia,serif"; g.fillText(val,x,y+92); }
+  function sealPoster(){
+    const s=sessLoad(), st=stats(), nst=NPstats(NPtrades());
+    const won=s.result==="won", flat=s.result==="flat";
+    const W=1080,H=1350, cv=document.createElement("canvas"); cv.width=W; cv.height=H; const g=cv.getContext("2d");
+    const bone="#F4F1EA", accent="#3d86cf", dim="rgba(244,241,234,.5)";
+    g.fillStyle="#0A0A0B"; g.fillRect(0,0,W,H);
+    const grd=g.createRadialGradient(W/2,H*0.40,120,W/2,H*0.40,960); grd.addColorStop(0,"rgba(61,134,207,.12)"); grd.addColorStop(1,"rgba(10,10,11,0)"); g.fillStyle=grd; g.fillRect(0,0,W,H);
+    g.strokeStyle="rgba(244,241,234,.16)"; g.lineWidth=2; g.strokeRect(56,56,W-112,H-112);
+    g.textAlign="left"; g.fillStyle=dim; g.font="600 26px 'Inter Tight',sans-serif"; g.fillText("S P O T T E R   A I",96,158);
+    g.textAlign="right"; g.fillStyle=accent; g.font="600 26px 'Inter Tight',sans-serif"; g.fillText("N.º "+String(Math.max(sealEdition(),1)).padStart(3,"0"),W-96,158);
+    const head=won?"Clean shot.":flat?"No shot taken.":"Held the line.";
+    g.textAlign="left"; g.fillStyle=bone; g.font="italic 400 132px 'Hoefler Text',Georgia,serif"; g.fillText(head,90,500);
+    const sub=won?"Una bala. Un win. Sellado.":flat?"Esperé mi A+. No llegó. Cuenta intacta.":"Tomé el stop y lo respeté. Disciplina, no fracaso.";
+    g.fillStyle=dim; g.font="400 36px 'Inter Tight',sans-serif"; posterWrap(g,sub,96,580,W-192,50);
+    g.fillStyle=dim; g.font="500 30px 'Inter Tight',sans-serif"; g.fillText(fmtHuman(hoy()),96,700);
+    g.strokeStyle="rgba(244,241,234,.14)"; g.beginPath(); g.moveTo(96,928); g.lineTo(W-96,928); g.stroke();
+    posterStat(g,96,1010,"RACHA",String(st.racha),accent);
+    posterStat(g,440,1010,"WIN RATE",nst.winRate+"%",bone);
+    posterStat(g,760,1010,"SELLADAS",String(sealEdition()),bone);
+    g.textAlign="center"; g.fillStyle=bone; g.font="italic 400 46px 'Hoefler Text',Georgia,serif"; g.fillText("Una bala. Cada día.",W/2,H-158);
+    g.font="500 24px 'Inter Tight',sans-serif"; g.fillStyle=dim; g.fillText("studioamr.github.io/spotter-ai",W/2,H-108);
+    cv.toBlob(function(blob){ if(!blob)return;
+      try{ const file=new File([blob],"spotter-shot.png",{type:"image/png"});
+        if(navigator.canShare&&navigator.canShare({files:[file]})){ navigator.share({files:[file],title:"SPOTTER AI",text:head+" Una bala."}).catch(()=>posterDL(blob)); return; }
+      }catch(e){}
+      posterDL(blob);
+    },"image/png");
+  }
+  function posterDL(blob){ const u=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=u; a.download="spotter-shot-"+hoy()+".png"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),3000); }
   function sessInfoCard(){
     const on=spkOn();
     return `<div class="p-card ses-info"><div class="c-t">The Spotter is with you <button class="spk-toggle ${on?"on":""}" data-a="spkr" data-hover>${on?"🔊 Voz activa":"🔈 Voz apagada"}</button></div>
@@ -1984,11 +2052,16 @@
           <div class="sr-rule"><span>Max session risk</span><b><input class="rul-inp" id="rul-sess" type="number" min="0.1" step="0.1" value="${esc(String(RULES.sess))}">%</b></div>
           <div class="sr-rule"><span>Profit target</span><b class="up">+<input class="rul-inp" id="rul-target" type="number" min="0.1" step="0.1" value="${esc(String(RULES.target))}">%</b></div>
         </div>
+        ${(()=>{ const size=(acctLoad()||{}).size||a.size||50000, riskD=Math.round(size*(RULES.risk/100));
+          return `<div class="risk-calc">Tu bala = <b>${RULES.risk}%</b> de <b>$${size.toLocaleString("en-US")}</b> → <b class="up">$${riskD.toLocaleString("en-US")}</b> de riesgo máximo por trade</div>`; })()}
       </div>
     </div>`;
   }
   function sesFase1(s){
+    const already=!s.sim&&todaySealed();
+    const tilt=already?`<div class="p-card tilt-warn"><b>⚠ Ya disparaste tu bala hoy${already.outcome==="GANADA"?" y la ganaste":""}.</b> Otra entrada hoy es ${already.outcome==="GANADA"?"sobre-operar":"revenge"}. El Spotter te recomienda cerrar. Una bala.</div>`:"";
     return `<div class="sess-live">
+      ${tilt}
       <div class="p-card sl-top"><div class="sl-status"><span class="sl-dot"></span> Phase 1 · live · <b>Spotter monitoring</b>${simBadge(s)}</div><div class="sl-time" id="sl-time">0m</div></div>
       <div class="ses-grid">
         <div class="p-card ses-main">
@@ -2040,6 +2113,7 @@
         </div>
         <textarea id="ses-notes" class="home-editor" placeholder="what you saw, what you felt, what to improve…">${esc(rec.notes||"")}</textarea></div>`}
       <div class="sl-actions">
+        <button class="btn accent" data-a="shareshot" data-hover>◆ Comparte tu tiro</button>
         <button class="btn fill" data-go="dashboard" data-hover>Review your dashboard →</button>
         <button class="btn ghost" data-a="newsession" data-hover>New session</button>
       </div>
@@ -2088,8 +2162,26 @@
   function wallTime(t){ try{ const ms=Date.now()-new Date(t).getTime(), m=Math.floor(ms/60000); if(m<1)return"ahora"; if(m<60)return m+"m"; const h=Math.floor(m/60); if(h<24)return h+"h"; return Math.floor(h/24)+"d"; }catch(e){return"";} }
   /* --- racha de disciplina (sesiones seguidas sin revenge) --- */
   function discStreak(){ const h=histLoad().filter(x=>x.outcome).sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||"")); let s=0; for(const x of h){ if(x.revenges){break;} s++; } return s; }
-  function welcomeBack(){ const h=histLoad().filter(x=>x.outcome); if(!h.length)return ""; const net=totalProfit(),streak=discStreak(),name=(profileLoad()||{}).handle||"trader";
-    return `<div class="p-card wb-card"><div class="wb-l">De vuelta, <b>${esc(name)}</b>.</div><div class="wb-r"><span class="wb-chip">🔥 ${streak} racha</span><span class="wb-chip ${net>=0?'up':'down'}">${money(net)} net</span><span class="wb-chip">${h.length} sesiones</span></div></div>`; }
+  /* --- memoria del error recurrente (tu fuga #1, honesto desde tu journal) --- */
+  function topLeak(){ const h=histLoad().filter(x=>x.outcome); if(h.length<3)return null;
+    const rev=h.reduce((a,x)=>a+(x.revenges||0),0);
+    if(rev>0)return {txt:"Revenge tras pérdida", voz:"Tu fuga número uno es el revenge. Tras una pérdida, cierra la plataforma."};
+    const fomo=h.filter(x=>x.emotion==="fomo").length, anx=h.filter(x=>x.emotion==="ansioso").length;
+    if(fomo>=2)return {txt:"Entradas por FOMO", voz:"Tu fuga es el FOMO. Solo dispara tu A más, si no, no dispares."};
+    if(anx>=2)return {txt:"Operar ansioso", voz:"Operas ansioso. Respira antes de entrar y espera tu setup."};
+    const cnt={}; h.filter(x=>x.outcome==="BLOQUEADO").forEach(x=>{ if(x.setup)cnt[x.setup]=(cnt[x.setup]||0)+1; });
+    let top=null,mx=1; for(const k in cnt){ if(cnt[k]>mx){mx=cnt[k];top=k;} }
+    if(top)return {txt:"Pierdes seguido en "+top.toUpperCase(), voz:"Tu setup "+top+" te está costando seguido. Revísalo o déjalo hoy."};
+    return null; }
+  function todaySealed(){ return histLoad().find(x=>x.fecha===hoy()&&x.outcome&&!x.sim); }
+  /* --- briefing de voz personalizado (racha + tu fuga) --- */
+  function spotBrief(){ const name=spotName(), st=stats(), leak=topLeak();
+    let t="Listo, "+name+". Una sola bala hoy. Tu setup A más, stop al uno por ciento. ";
+    if(st.racha>=3)t+="Llevas "+st.racha+" sesiones con disciplina, no la rompas hoy. ";
+    if(leak)t+=leak.voz+" ";
+    return t+"Respira y espera tu entrada."; }
+  function welcomeBack(){ const h=histLoad().filter(x=>x.outcome); if(!h.length)return ""; const net=totalProfit(),streak=discStreak(),name=(profileLoad()||{}).handle||"trader",leak=topLeak();
+    return `<div class="p-card wb-card"><div class="wb-l">De vuelta, <b>${esc(name)}</b>.</div><div class="wb-r"><span class="wb-chip">🔥 ${streak} racha</span><span class="wb-chip ${net>=0?'up':'down'}">${money(net)} net</span><span class="wb-chip">${h.length} sesiones</span>${leak?`<span class="wb-chip leak" title="Lo que el Spotter vigila hoy">⚠ Fuga: ${esc(leak.txt)}</span>`:""}</div></div>`; }
   /* --- reto semanal --- */
   function weeklyChallenge(){
     const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
@@ -2110,17 +2202,19 @@
     m.hidden=false; }
   function viewComunidad(){
     const p=profileLoad()||{}, av=((p.handle||"T").trim()[0]||"T").toUpperCase();
-    const card=a=>`<a class="ann-card" href="${DISCORD}" target="_blank" rel="noopener" data-hover><div class="fy-t">${a.live?'<span class="live-dot"></span> ':""}${esc(a.t)}</div><div class="fy-s">${esc(a.s)}</div></a>`;
-    const strip=ANNOUNCEMENTS.map(card).join("");
-    const ann=`<div class="marquee"><div class="marquee-track">${strip}${strip}</div></div>`;
-    const composer=`<div class="p-card wall-composer"><span class="wp-av">${av}</span><input id="wall-input" class="wall-input" placeholder="Comparte tu PNL, tu win, tu racha…" maxlength="280"><button class="btn fill" data-a="wallpost" data-hover>Postear</button></div>`;
-    const feed=SUPA_POSTS.length?`<div class="wall">${SUPA_POSTS.map(x=>`<div class="wall-post"><span class="wp-av">${((x.author||"T").trim()[0]||"T").toUpperCase()}</span><div class="wp-b"><div class="wp-h"><b>${esc(x.author||"trader")}</b><span>${wallTime(x.created_at)}</span></div><p>${esc(x.body||"")}</p></div></div>`).join("")}</div>`:`<div class="hempty" style="padding:14px 2px">Sé el primero en postear — la comunidad aparece en vivo.</div>`;
-    const invite=`<div class="p-card inv-card"><div><b>Invita a un trader</b><p class="home-note" style="margin:2px 0 0">Comparte SPOTTER AI y suban juntos en el leaderboard.</p></div><button class="btn" data-a="invite" data-hover>Compartir link →</button></div>`;
-    return `<div class="home2">
-      ${homeSec("The wall · live",composer+feed)}
-      ${homeSec("Weekly challenge",weeklyChallenge())}
-      ${homeSec("Announcements",ann)}
-      ${homeSec("Race to payout",buildRace())}
+    const members=Math.max(1,SUPA_PROFILES.length), funded=SUPA_PROFILES.filter(x=>x.phase&&x.phase!=="eval").length;
+    const pulse=`<div class="p-card room-pulse"><div class="rp-top"><div><div class="rp-k">The room · en vivo</div><h2 class="rp-h">La sala.</h2></div><a class="btn fill" href="${DISCORD}" target="_blank" rel="noopener" data-hover>Discord →</a></div>
+      <div class="rp-stats"><div class="rp-stat"><b>${members}</b><span>traders</span></div><div class="rp-stat"><b class="up">${funded}</b><span>fondeados</span></div><div class="rp-stat"><b>${SUPA_POSTS.length}</b><span>en el muro</span></div></div></div>`;
+    const live=`<a class="p-card live-sess" href="${DISCORD}" target="_blank" rel="noopener" data-hover><span class="ls-dot"></span><div class="ls-b"><b>Sesiones en vivo</b><p>La apertura de Nueva York, cada mañana, en directo con André y la sala.</p></div><span class="ls-go">Unirme →</span></a>`;
+    const composer=`<div class="wall-composer"><span class="wp-av">${av}</span><input id="wall-input" class="wall-input" placeholder="Comparte tu PNL, tu win, algo con la sala…" maxlength="280"><button class="btn fill" data-a="wallpost" data-hover>Postear</button></div>`;
+    const feed=SUPA_POSTS.length?`<div class="wall">${SUPA_POSTS.map(x=>`<div class="wall-post"><span class="wp-av">${((x.author||"T").trim()[0]||"T").toUpperCase()}</span><div class="wp-b"><div class="wp-h"><b>${esc(x.author||"trader")}</b><span>${wallTime(x.created_at)}</span></div><p>${esc(x.body||"")}</p></div></div>`).join("")}</div>`:`<div class="wall-empty">Aún no hay posts — <b>sé el primero</b>. Lo que publiques aparece en vivo para toda la sala.</div>`;
+    const invite=`<button class="inv-strip" data-a="invite" data-hover><span class="inv-plus">＋</span> Invita a un trader — suban juntos en el leaderboard</button>`;
+    return `<div class="home2 comm2">
+      ${pulse}
+      ${live}
+      ${homeSec("El muro",`<div class="p-card wall-card">${composer}${feed}</div>`)}
+      ${homeSec("Reto de la semana",weeklyChallenge())}
+      ${homeSec("Carrera al payout",buildRace())}
       ${invite}
     </div>`;
   }
@@ -2266,6 +2360,11 @@
           <div class="rc-run me" data-pos="${pos.toFixed(1)}" style="left:2%;background:${ph.c}">${initials(you.u)}</div></div>
         <p class="home-note">${you.phase==="eval"?`$${toGo.toLocaleString("en-US")} of profit to clear the eval — then you're funded, and then Eden: the payout zone.`:you.phase==="funded"?"Funded. Build the buffer and your first payout opens Eden.":"Eden — you're cashing. Keep the discipline, keep withdrawing."}</p>
       </div>
+      ${(()=>{ if(you.phase!=="eval")return""; const avg=avgGreen(), left=avg>0?Math.ceil(toGo/avg):null;
+        return `<div class="p-card pace-card"><div class="c-t">Tu ritmo <span class="room-agg">al paso actual</span></div>
+        <div class="pace-row"><div class="pace-big">${left!=null?left:"—"}<small>${left!=null?(left===1?"sesión ganada":"sesiones ganadas"):"sin datos aún"}</small></div>
+          <div class="pace-meta"><div>Falta <b>$${toGo.toLocaleString("en-US")}</b> para pasar el eval</div><div>Promedio por win: <b class="up">${avg>0?money(Math.round(avg)):"—"}</b></div></div></div>
+        <p class="home-note">${left!=null?"Estimado honesto con tu promedio de wins — no es garantía. Mantén la disciplina y el número baja solo.":"Sella algunas sesiones ganadas y el Spotter calcula tu ritmo para pasar."}</p></div>`; })()}
       <div class="p-card"><div class="c-t">The room race</div>${buildRace()}</div>
       <div class="kpis">
         <div class="kpi"><div class="k-l">Accounts</div><div class="k-v">${accts.length||1}</div></div>
@@ -2487,7 +2586,7 @@
     settings:{t:"Settings",s:"your platform",f:viewSettings},
   };
   const NAV=[
-    {r:"home",label:"Home"},{r:"course",label:"Course"},{r:"comunidad",label:"Community"},
+    {r:"home",label:"Home"},{r:"course",label:"Course"},
     {group:"TRADE"},{r:"sesion",label:"Start Session"},{r:"training",label:"Training"},
     {group:"JOURNAL"},{r:"dashboard",label:"Dashboard"},{r:"trades",label:"Trades"},{r:"coach",label:"AI Coach"},{r:"progreso",label:"Progress"},{r:"cuentas",label:"Accounts"},
     {group:"MONEY"},{r:"plan",label:"Plan"},{r:"payouts",label:"Payouts"},
@@ -2500,7 +2599,7 @@
     $("#sidebar").innerHTML=`<div class="sb-brand"><svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><g class="spin"><circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/><path d="M16 3.4v4.4M16 24.2v4.4M3.4 16h4.4M24.2 16h4.4" stroke="currentColor" stroke-width="1.4" opacity=".4" stroke-linecap="round"/></g><circle class="lock" cx="16" cy="16" r="5.4" fill="none" stroke="var(--accent)" stroke-width="1.35"/><circle cx="16" cy="16" r="2.2" fill="var(--accent)"/></svg>SPOTTER <i>AI</i></div>${userLoad()?`<div class="trial-badge">Acceso completo</div>`:""}
       <button class="sb-profile" data-route="profile" data-hover><span class="tb-av">${(name.trim()[0]||"T").toUpperCase()}</span><span class="sb-pinfo"><b>${esc(name)}</b><small>your profile</small></span></button>
       <nav class="navlist">${items}</nav>
-      <div class="sb-foot"><button class="navitem" data-route="settings" data-hover><span>Settings</span></button><a class="navitem" href="${DISCORD}" target="_blank" rel="noopener" data-hover><span>Community · Discord</span></a></div>`;
+      <div class="sb-foot"><button class="navitem" data-route="settings" data-hover><span>Settings</span></button><a class="navitem" href="${DISCORD}" target="_blank" rel="noopener" data-hover><span>Discord →</span></a></div>`;
   }
   function toggleNav(){const s=document.getElementById("sidebar");if(s)s.classList.toggle("open");}
   let vistaActual="home";
