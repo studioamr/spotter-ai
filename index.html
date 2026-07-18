@@ -1659,7 +1659,7 @@
     <div class="p-card" style="margin-top:18px"><div class="c-t">${MONTHS[Number(calMonth.slice(5))-1]}</div>${calendarFull(calMonth)}</div>
     <div class="p-card" style="margin-top:18px"><div class="c-t">Recent trades</div>
       <table class="tbl"><thead><tr><th>Date</th><th>Result</th><th>Dur.</th><th>P&L</th><th>Setup</th></tr></thead><tbody>
-      ${recent.map(t=>`<tr><td class="strong">${t.fecha.slice(5).replace("-","/")}</td><td><span class="pill ${t.result}">${t.result==="win"?"Won":"Lost"}</span></td><td>${t.durMin?t.durMin+"m":"—"}</td><td class="${t.pnl>0?'up':t.pnl<0?'down':''}">${t.pnl!=null?money(t.pnl):"—"}</td><td>${t.setup?(SETUPS_L[t.setup]||t.setup):"—"}</td></tr>`).join("")}
+      ${recent.map(t=>`<tr><td class="strong">${(t.fecha||"").slice(5).replace("-","/")||"—"}</td><td><span class="pill ${t.result}">${t.result==="win"?"Won":"Lost"}</span></td><td>${t.durMin?t.durMin+"m":"—"}</td><td class="${t.pnl>0?'up':t.pnl<0?'down':''}">${t.pnl!=null?money(t.pnl):"—"}</td><td>${t.setup?(SETUPS_L[t.setup]||t.setup):"—"}</td></tr>`).join("")}
       </tbody></table></div>`; }
 
   var TRADE_FILTER={result:"",setup:"",session:""};
@@ -1674,7 +1674,7 @@
       <select id="tf-setup"><option value="">Setup</option>${Object.keys(SETUPS_L).map(k=>opt(k,SETUPS_L[k],F.setup)).join("")}</select>
       <select id="tf-session"><option value="">Session</option>${Object.keys(SESSIONS_L).map(k=>opt(k,SESSIONS_L[k],F.session)).join("")}</select>
       ${active?`<span class="tf-count">${filtered.length} of ${all.length}</span><button class="btn ghost" data-a="tfclear" data-hover>Clear</button>`:""}</div>`;
-    const rows=filtered.length?filtered.map(t=>`<tr><td class="strong">${t.fecha.slice(5).replace("-","/")}${t.sim?' <span class="sim-badge">SIM</span>':""}</td><td><span class="pill ${t.result}">${t.result==="win"?"Won":"Lost"}</span></td><td>${t.durMin?t.durMin+"m":"—"}</td><td class="${t.pnl>0?'up':t.pnl<0?'down':''}">${t.pnl!=null?money(t.pnl):"—"}</td><td>${t.setup?(SETUPS_L[t.setup]||t.setup):"—"}</td><td>${t.emotion?(EMO_L[t.emotion]||t.emotion):"—"}</td><td>${t.revenges?'<span class="down">'+t.revenges+'</span>':"·"}</td><td>${spotCell(t.fecha)}</td><td class="tr-edit" data-tedit="${esc(t.id||"")}" title="Edit / delete">✎</td></tr>`).join(""):`<tr><td colspan="9" class="tf-empty">No trades match those filters.</td></tr>`;
+    const rows=filtered.length?filtered.map(t=>`<tr><td class="strong">${(t.fecha||"").slice(5).replace("-","/")||"—"}${t.sim?' <span class="sim-badge">SIM</span>':""}</td><td><span class="pill ${t.result}">${t.result==="win"?"Won":"Lost"}</span></td><td>${t.durMin?t.durMin+"m":"—"}</td><td class="${t.pnl>0?'up':t.pnl<0?'down':''}">${t.pnl!=null?money(t.pnl):"—"}</td><td>${t.setup?(SETUPS_L[t.setup]||t.setup):"—"}</td><td>${t.emotion?(EMO_L[t.emotion]||t.emotion):"—"}</td><td>${t.revenges?'<span class="down">'+t.revenges+'</span>':"·"}</td><td>${spotCell(t.fecha)}</td><td class="tr-edit" data-tedit="${esc(t.id||"")}" title="Edit / delete">✎</td></tr>`).join(""):`<tr><td colspan="9" class="tf-empty">No trades match those filters.</td></tr>`;
     return head+filterBar+`<table class="tbl"><thead><tr><th>Date</th><th>Result</th><th>Dur.</th><th>P&L</th><th>Setup</th><th>Emotion</th><th>Rev.</th><th>Spotter</th><th></th></tr></thead><tbody>`+rows+`</tbody></table>${modals}`; }
 
   /* AI Coach · NorthPoint logic: memory hero + KPIs + insights w/ rules + breakdowns */
