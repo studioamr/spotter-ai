@@ -812,11 +812,14 @@
     F.spire=a;}
   { // el ojo: el Spotter que te cuida — contorno, iris y pupila (por bloques ordenados)
     const a=new Float32Array(N*3);
-    const nA=Math.floor(N*.45),nB=Math.floor(N*.35);
+    const nA=Math.floor(N*.34),nB=Math.floor(N*.20),nC=Math.floor(N*.10);
     for(let i=0;i<N;i++){let x,y,z;
       if(i<nA){const an=(i/nA)*Math.PI*2;x=Math.cos(an)*11;y=Math.sin(an)*5;z=gauss()*.4;}
       else if(i<nA+nB){const an=((i-nA)/nB)*Math.PI*2,r=3.1+gauss()*.35;x=Math.cos(an)*r;y=Math.sin(an)*r;z=.5+gauss()*.3;}
-      else{const t=(i-nA-nB)/(N-nA-nB),an=t*Math.PI*22,r=Math.sqrt(t)*1.15;x=Math.cos(an)*r;y=Math.sin(an)*r;z=.8+gauss()*.25;}
+      else if(i<nA+nB+nC){const t=(i-nA-nB)/nC,an=t*Math.PI*22,r=Math.sqrt(t)*1.15;x=Math.cos(an)*r;y=Math.sin(an)*r;z=.8+gauss()*.25;}
+      else{ /* polvo: el ojo flota en un campo de datos, no en el vacío */
+        const an=rnd()*6.283, rr=13+Math.pow(rnd(),.55)*19;
+        x=Math.cos(an)*rr; y=Math.sin(an)*rr*.6+gauss()*1.6; z=gauss()*3.4; }
       a[i*3]=x+gauss()*.12;a[i*3+1]=y+gauss()*.12;a[i*3+2]=z;}
     F.eye=a;}
   { // la retícula: tu diario — todo medido, todo en su lugar
@@ -891,10 +894,17 @@
   const BS=[];
   function seedBolt(b){ b.a=rnd()*6.283; b.r=10+rnd()*2.5; b.life=6+rnd()*16; b.seed=rnd()*900; b.amp=.7+rnd()*1.5; }
   for(let b=0;b<BOLTS;b++){ const o={}; seedBolt(o); BS.push(o); }
-  /* núcleo: el iris incandescente mientras carga */
-  const coreMat=new T.PointsMaterial({color:0xeaf6ff,size:1.6,transparent:true,opacity:0,depthWrite:false,sizeAttenuation:true,blending:T.AdditiveBlending});
-  const coreGeo=new T.BufferGeometry(); coreGeo.setAttribute("position",new T.BufferAttribute(new Float32Array([0,0,.9]),3));
-  world.add(new T.Points(coreGeo,coreMat));
+  /* ---- DESCARGA: datos cayendo sin parar hacia la pupila ---- */
+  const FEED=170;
+  const feedGeo=new T.BufferGeometry();
+  const feedPos=new Float32Array(FEED*3);
+  feedGeo.setAttribute("position",new T.BufferAttribute(feedPos,3));
+  const feedMat=new T.PointsMaterial({color:0xbfe0ff,size:.17,transparent:true,opacity:0,depthWrite:false,sizeAttenuation:true,blending:T.AdditiveBlending});
+  world.add(new T.Points(feedGeo,feedMat));
+  const FD=[];
+  function seedFeed(f){ const an=rnd()*6.283, rr=24+rnd()*26;
+    f.x=Math.cos(an)*rr; f.y=Math.sin(an)*rr*.66; f.z=(rnd()-.5)*15; f.t=0; f.v=.0035+rnd()*.011; }
+  for(let i=0;i<FEED;i++){ const o={}; seedFeed(o); o.t=rnd(); FD.push(o); }
   /* polvo lejano */
   const M=900,dp=new Float32Array(M*3);
   for(let i=0;i<M;i++){const v=new T.Vector3(rnd()-.5,rnd()-.5,rnd()-.5).normalize().multiplyScalar(40+rnd()*60);
@@ -1016,10 +1026,15 @@
         }
       }
       boltGeo.attributes.position.needsUpdate=true;
+      /* la descarga: cada partícula viaja de afuera hacia la pupila y vuelve a nacer */
+      for(let i=0;i<FEED;i++){ const f=FD[i];
+        f.t+=f.v; if(f.t>=1) seedFeed(f);
+        const e=f.t*f.t*(3-2*f.t);                       // acelera al ser absorbida
+        feedPos[i*3]=f.x*(1-e); feedPos[i*3+1]=f.y*(1-e); feedPos[i*3+2]=f.z*(1-e)+e*.9; }
+      feedGeo.attributes.position.needsUpdate=true;
+      feedMat.opacity=W.eye*(.6+surge*.4);
       boltMat.opacity=W.eye*(.42+surge*.58)*flick;                  // se enciende al descargar
-      coreMat.opacity=W.eye*(.55+surge*.45);                        // el iris incandescente
-      coreMat.size=1.4+surge*3.4;
-    } else { boltMat.opacity=0; coreMat.opacity=0; }
+    } else { boltMat.opacity=0; feedMat.opacity=0; }
     if(tape)tape.style.opacity=Math.max(0,1-W.spire*.9);
     renderer.render(scene,cam);
     requestAnimationFrame(tick);
