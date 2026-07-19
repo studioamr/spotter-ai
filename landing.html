@@ -1005,6 +1005,7 @@
   /* ---- anclas de la narrativa: cada sección tiene su forma ---- */
   const C1=document.querySelector('[data-ch="1"]'),C2=document.querySelector('[data-ch="2"]');
   const FIN=document.querySelector("#cierre");
+  const FINAL=document.querySelector("#lista");   // el último bloque: aquí vuelve el ojo
   const HERO=document.querySelector("header.hero");
   const FORM_SECS=[["#oferta","chaos"],["#mentor","orbit"],["#sistema","rise"],["#spotter","eye"],["#app","grid"],["#comunidad","helix"],
     ["#extras","rain"],["#camino","rise"],["#educacion","orbit"],["#semana","grid"],["#faq","chaos"]]
@@ -1044,6 +1045,8 @@
     if(t1>-.1&&t1<1.12)form="fall";
     if(t2>-.1&&t2<1.12)form="rise";
     if(smooth(.12,.7,finT)>.5)form="spire";
+    /* y al final del todo, la deidad se rearma: el ojo que te vio llegar te ve irte */
+    if(FINAL){ const fr=FINAL.getBoundingClientRect(); if(fr.top<vh*.62) form="eye"; }
     for(const k of FK)W[k]+=((k===form?1:0)-W[k])*.06;
     let wsum=0;for(const k of FK)wsum+=W[k];wsum=wsum||1;
     /* el parpadeo: el obturador se cierra de golpe, dos veces, cada ~9s.
