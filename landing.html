@@ -59,6 +59,48 @@
   .btn.acc:hover{filter:brightness(1.12)}
   .btn.lg{padding:17px 30px;font-size:13px}
 
+
+  /* ---- el momento: el producto en el hero ---- */
+  .hero-grid{display:grid;grid-template-columns:1fr;gap:clamp(38px,5vw,64px);align-items:center}
+  @media(min-width:1080px){ .hero-grid{grid-template-columns:minmax(0,1.05fr) minmax(340px,.85fr)} }
+  .hero-frame{position:relative;z-index:3;max-width:470px;justify-self:end;width:100%}
+  @media(max-width:1079px){.hero-frame{justify-self:start;max-width:440px}}
+  .hf-win{border:1px solid var(--line2);border-radius:14px;background:linear-gradient(180deg,rgba(14,14,18,.92),rgba(7,7,9,.92));
+    backdrop-filter:blur(3px);overflow:hidden;box-shadow:0 30px 80px -40px rgba(0,0,0,.9)}
+  .hf-bar{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid var(--line)}
+  .hf-eye{width:20px;height:20px;flex:none;color:var(--dim);animation:hfBlink 9s ease-in-out infinite;transform-origin:16px 16px}
+  @keyframes hfBlink{0%,86%{transform:scaleY(1)}88%{transform:scaleY(.08)}90%{transform:scaleY(1)}92%{transform:scaleY(.08)}94%,100%{transform:scaleY(1)}}
+  .hf-name{font-family:var(--mono);font-size:10px;letter-spacing:.30em;color:var(--dim)}
+  .hf-name i{font-style:normal;color:var(--acc);margin-left:5px}
+  .hf-dot{margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--dn);animation:pulse 1.8s infinite}
+  .hf-body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:15px}
+  .hf-acct{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .hf-chip{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    padding:5px 9px;border-radius:6px;border:1px solid rgba(74,144,217,.4);color:var(--acc);background:rgba(74,144,217,.08)}
+  .hf-plan{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .hf-today{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+  .hf-today b{color:var(--dn);font-variant-numeric:tabular-nums;margin-left:4px}
+  .hf-lock{display:flex;gap:13px;align-items:flex-start;padding:14px;border-radius:10px;
+    border:1px solid rgba(242,54,69,.4);background:rgba(242,54,69,.07)}
+  .hf-lockic{flex:none;width:26px;height:26px;color:var(--dn)}
+  .hf-lockic svg{width:100%;height:100%}
+  .hf-h{font-family:var(--sans);font-size:1rem;font-weight:600;letter-spacing:-.01em}
+  .hf-p{font-family:var(--sans);font-size:.84rem;color:var(--dim);margin:4px 0 0;line-height:1.5}
+  .hf-mtop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .hf-mtop span{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .hf-mtop b{font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums;color:var(--dn)}
+  .hf-bar-track{height:5px;border-radius:3px;background:rgba(237,235,230,.08);overflow:hidden}
+  .hf-fill{display:block;height:100%;width:100%;background:var(--dn);transform-origin:left;
+    animation:hfDrain 3.4s cubic-bezier(.5,0,.2,1) .6s both}
+  @keyframes hfDrain{from{transform:scaleX(.35)}to{transform:scaleX(1)}}
+  .hf-btn{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    padding:13px;border-radius:9px;border:1px solid var(--line2);background:transparent;color:var(--dim);
+    opacity:.32;cursor:not-allowed;pointer-events:none;text-decoration:line-through}
+  .hf-cap{font-family:var(--sans);font-size:.9rem;color:var(--text);margin:18px 0 0;line-height:1.55;
+    padding:12px 14px;border-left:2px solid var(--acc);background:rgba(7,7,9,.72);backdrop-filter:blur(2px);border-radius:0 8px 8px 0}
+  .hf-cap span{color:var(--dim);font-size:.82rem;display:inline-block;margin-top:3px}
+  @media(prefers-reduced-motion:reduce){.hf-eye,.hf-fill,.hf-dot{animation:none}}
+
   /* ---- hero ---- */
   .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:130px 0 70px;position:relative;z-index:2}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim);
@@ -362,13 +404,52 @@
 </div></nav>
 
 <!-- HERO -->
-<header class="hero"><div class="wrap">
+<header class="hero"><div class="wrap hero-grid">
+ <div class="hero-copy">
   <div class="eyebrow reveal"><span class="tick"></span>En vivo · cada mañana en la apertura de Nueva York · 7:00 AM</div>
   <h1 class="display reveal">Aprende.<br>Opera. <em>Cobra.</em></h1>
   <p class="hero-sub reveal">Aprende a operar futuros con el <b>dinero de empresas fondeadoras — no el tuyo</b>. Mentor en vivo, la plataforma <b>Spotter AI</b> y una comunidad activa. <b>Regístrate y descarga la app hoy</b> — te queda en el escritorio, lista para operar.</p>
   <div class="hero-cta reveal">
     <a class="btn acc lg" href="#lista">Descargar la app →</a>
   </div>
+ </div>
+
+ <!-- EL MOMENTO: no atmósfera, el producto haciendo lo suyo -->
+ <aside class="hero-frame reveal" aria-label="La app cerrando el día">
+  <div class="hf-win">
+    <div class="hf-bar">
+      <svg class="hf-eye" viewBox="0 0 32 32" aria-hidden="true">
+        <polygon points="2.8,16 6.8,10.6 12.2,7.6 16,7 19.8,7.6 25.2,10.6 29.2,16 25.2,21.4 19.8,24.4 16,25 12.2,24.4 6.8,21.4" fill="none" stroke="currentColor" stroke-width="1.15" opacity=".5"/>
+        <polygon points="19.8,16 17.9,19.3 14.1,19.3 12.2,16 14.1,12.7 17.9,12.7" fill="none" stroke="var(--acc)" stroke-width="1.15"/>
+        <circle cx="16" cy="16" r="1.45" fill="var(--acc)"/>
+      </svg>
+      <span class="hf-name">SPOTTER<i>AI</i></span>
+      <span class="hf-dot" aria-hidden="true"></span>
+    </div>
+
+    <div class="hf-body">
+      <div class="hf-acct"><span class="hf-chip">Topstep · $50k</span><span class="hf-plan">Trading Combine</span>
+        <span class="hf-today">Today <b>−$2,100</b></span></div>
+      <div class="hf-lock">
+        <div class="hf-lockic" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 10V7.5a5 5 0 0 1 10 0V10" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="4.5" y="10" width="15" height="10.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="15.2" r="1.5" fill="currentColor"/></svg>
+        </div>
+        <div>
+          <div class="hf-h">Locked — the day is done</div>
+          <p class="hf-p">You're down $2,100 today and your limit is $2,000.</p>
+        </div>
+      </div>
+
+      <div class="hf-meter">
+        <div class="hf-mtop"><span>Drawdown floor</span><b>$0 above $50,000</b></div>
+        <div class="hf-bar-track"><span class="hf-fill"></span></div>
+      </div>
+
+      <button class="hf-btn" type="button" tabindex="-1" aria-hidden="true">Start session</button>
+    </div>
+  </div>
+  <p class="hf-cap">El software te cierra el día cuando tu límite dice basta.<br><span>Reglas reales de tu fondeadora — no un promedio inventado.</span></p>
+ </aside>
 </div>
 <div class="hero-scroll">baja — te cuento cómo funciona</div>
 </header>
