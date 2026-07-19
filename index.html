@@ -86,6 +86,8 @@
   .sz-bars>div{display:flex;flex-direction:column;gap:2px}
   .sz-bars span{font-family:var(--mono);font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink2)}
   .sz-bars b{font-family:var(--sans);font-size:.95rem;font-variant-numeric:tabular-nums}
+  .guard-who{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .guard-who .sa-k{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin-bottom:7px}
   .lock-card{display:flex;gap:14px;align-items:flex-start;border-color:rgba(214,69,69,.45);background:rgba(214,69,69,.07)}
   .lock-card.bypassed{border-color:rgba(201,162,75,.45);background:rgba(201,162,75,.07)}
   .lock-ic{font-size:1.5rem;line-height:1;flex:none}
@@ -1384,7 +1386,7 @@
   /* ---------- events ---------- */
   document.addEventListener("click",e=>{
     const b=e.target.closest("button[data-a]");if(!b)return;
-    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,lockoverride:lockOverride,addacctgo:()=>{addAccount();mostrar("cuentas");},acctcancel:()=>{ACCT_EDIT=-1;mostrar("cuentas");},startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,shareshot:sealPoster,tradenew:tradeNew,tradesave:tradeSave,tradedel:tradeDelete,csvimport:csvImportClick,tfclear:()=>{TRADE_FILTER={result:"",setup:"",session:""};mostrar("trades");},buddyclear:()=>{try{localStorage.removeItem("candado_buddy");}catch(e){}mostrar("progreso");},exportdata:exportData,importdata:importDataClick,rulesedit:()=>{FIRM_EDIT=true;mostrar(vistaActual);},rulesapply:()=>{const a=acctLoad()||{};const f=$("#re-firmsel"),p=$("#re-plansel");if(f)a.firm=f.value;if(p&&firmPlans(a.firm).includes(p.value))a.plan=p.value;else a.plan=firmPlans(a.firm)[0]||"";const zs=firmSizes(a.firm,a.plan);if(zs.length&&!zs.includes(a.size))a.size=zs[0];["target","dailyLoss","maxDD","consistency","minDays"].forEach(k=>delete a[k]);acctSave(a);mostrar(vistaActual);},rulescancel:()=>{FIRM_EDIT=false;mostrar(vistaActual);},rulessave:firmRulesSave,guardreset:()=>{const a=acctLoad()||{};["target","dailyLoss","maxDD","consistency","minDays"].forEach(k=>delete a[k]);delete a.firmCustom;acctSave(a);mostrar(vistaActual);},pmspeak:()=>spkr(premarketText()),dismissnudge:()=>{TRADING_NUDGE="";statusPush(sessLoad().phase||"ready");mostrar(vistaActual);},replayonb:startOnb,practicenow:practiceNow,crewopen:crewOpen,crewjoin:crewJoin,crewleave:crewLeave,crewshare:crewShare,econedit:()=>{econEdit=true;mostrar("home");},econcancel:()=>{econEdit=false;mostrar("home");},econsave:()=>{const i=$("#econ-input");if(i)econSave(econParse(i.value));econEdit=false;mostrar("home");},trainstart:trainStart,trainend:trainEnd,trainwon:()=>trainSeal("won"),trainlost:()=>trainSeal("lost"),copyamr:myPlanCopyAMR,spkr:spkToggle,invite:()=>{try{window.open("https://wa.me/?text="+encodeURIComponent("Try SPOTTER AI with me — the trading platform built on discipline: https://studioamr.github.io/spotter-ai/landing.html"),"_blank");}catch(e){}},logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
+    ({sign:firmar,logpayout:logPayout,togglenav:toggleNav,addacct:addAccount,lockoverride:lockOverride,addacctgo:()=>{addAccount();mostrar("cuentas");},acctcancel:()=>{ACCT_EDIT=-1;mostrar("cuentas");},startsession:startSession,endsession:endSession,newsession:newSession,fire:fireBullet,won:wonSession,lost:lostSession,shareshot:sealPoster,tradenew:tradeNew,tradesave:tradeSave,tradedel:tradeDelete,csvimport:csvImportClick,tfclear:()=>{TRADE_FILTER={result:"",setup:"",session:""};mostrar("trades");},buddyclear:()=>{try{localStorage.removeItem("candado_buddy");}catch(e){}mostrar("progreso");},exportdata:exportData,importdata:importDataClick,rulesedit:()=>{FIRM_EDIT=true;mostrar(vistaActual);},rulesapply:()=>{const a=acctLoad()||{};const f=$("#re-firmsel"),p=$("#re-plansel");if(f)a.firm=f.value;if(p&&firmPlans(a.firm).includes(p.value))a.plan=p.value;else a.plan=firmPlans(a.firm)[0]||"";const zs=firmSizes(a.firm,a.plan);if(zs.length&&!zs.includes(a.size))a.size=zs[0];["target","dailyLoss","maxDD","consistency","minDays"].forEach(k=>delete a[k]);acctSave(a);mostrar(vistaActual);},rulescancel:()=>{FIRM_EDIT=false;mostrar(vistaActual);},rulessave:firmRulesSave,guardreset:()=>{const A=activeAcct(),a=A||acctLoad()||{},L=acctsLoad();["target","dailyLoss","maxDD","consistency","minDays"].forEach(k=>delete a[k]);delete a.firmCustom;if(A&&L)acctsSave(L);else acctSave(a);mostrar(vistaActual);},pmspeak:()=>spkr(premarketText()),dismissnudge:()=>{TRADING_NUDGE="";statusPush(sessLoad().phase||"ready");mostrar(vistaActual);},replayonb:startOnb,practicenow:practiceNow,crewopen:crewOpen,crewjoin:crewJoin,crewleave:crewLeave,crewshare:crewShare,econedit:()=>{econEdit=true;mostrar("home");},econcancel:()=>{econEdit=false;mostrar("home");},econsave:()=>{const i=$("#econ-input");if(i)econSave(econParse(i.value));econEdit=false;mostrar("home");},trainstart:trainStart,trainend:trainEnd,trainwon:()=>trainSeal("won"),trainlost:()=>trainSeal("lost"),copyamr:myPlanCopyAMR,spkr:spkToggle,invite:()=>{try{window.open("https://wa.me/?text="+encodeURIComponent("Try SPOTTER AI with me — the trading platform built on discipline: https://studioamr.github.io/spotter-ai/landing.html"),"_blank");}catch(e){}},logout:()=>{if(confirm("Log out? Your journal stays on this device."))(localStorage.removeItem("candado_user"),location.reload());}}[b.dataset.a]||function(){})();
   });
   document.addEventListener("input",e=>{ if(!e.target)return;
     if(ONB&&e.target.id&&e.target.id.startsWith("onb-")){ const d=ONB.data, id=e.target.id, v=e.target.value;
@@ -1416,14 +1418,15 @@
       if(e.target.id==="guard-daily")a.dailyLoss=Math.max(0,v)/100; else if(e.target.id==="guard-maxdd")a.maxDD=Math.max(0,v)/100; else if(e.target.id==="guard-cons")a.consistency=Math.max(0,v)/100; else if(e.target.id==="guard-mindays")a.minDays=Math.max(0,Math.round(v));
       acctSave(a); }});
   document.addEventListener("change",e=>{ if(!e.target)return;
-    if(e.target.closest("[data-reapply]")){ const a=acctLoad()||{};
+    if(e.target.closest("[data-reapply]")){ const A=activeAcct(), a=A||acctLoad()||{}, L=acctsLoad();
       const f=$("#re-firmsel"), p=$("#re-plansel");
       if(f)a.firm=f.value;
       const pl=firmPlans(a.firm);
       a.plan=(p&&pl.includes(p.value))?p.value:(pl[0]||"");
       const zs=firmSizes(a.firm,a.plan); if(zs.length&&!zs.includes(a.size))a.size=zs[0];
       ["target","dailyLoss","maxDD","consistency","minDays"].forEach(k=>delete a[k]); // vuelve a los oficiales
-      acctSave(a); mostrar(vistaActual); return; }
+      if(A&&L) acctsSave(L); else acctSave(a);
+      mostrar(vistaActual); return; }
     if(e.target.id==="sz-instr"){SZ_INSTR=e.target.value;mostrar("progreso");return;}
     if(e.target.id==="ses-setup"){sessRecord({setup:e.target.value||null});}
     else if(e.target.id==="ses-emotion"){sessRecord({emotion:e.target.value||null});}
@@ -2222,8 +2225,37 @@
                   eod:"trailing de cierre de día (sube con tu balance de cierre)",
                   static:"estático (el piso nunca se mueve)"};
 
-  function guardPhase(){ const a=acctLoad()||{}; if(a.guardPhase==="eval"||a.guardPhase==="funded")return a.guardPhase; return youRacer().phase==="eval"?"eval":"funded"; }
-  function guardLoad(){ const a=acctLoad()||{};
+  /* ================= LA CUENTA ACTIVA ==========================================
+     El guardián, el candado, el piso y la calculadora deben medir la cuenta que
+     REALMENTE estás operando. Antes leían una sola cuenta global: si operabas
+     Apex con la global en Topstep, cada límite que veías era de otra cuenta. */
+  function activeAcct(){ const L=acctsLoad()||[];
+    if(!L.length) return null;                       // sin cuentas: se usa la global de siempre
+    const lab=sesAcctLoad();                         // la que elegiste en Start Session manda
+    let a=L.find(x=>acctLabel(x)===lab);
+    if(!a && DASH_ACCT) a=L.find(x=>acctLabel(x)===DASH_ACCT);  // si no, la que ves en el dashboard
+    return a||L[0]; }
+  function activeAcctLabel(){ const a=activeAcct(); return a?acctLabel(a):""; }
+  /* Lee un campo de la cuenta activa, o de la global si no hay cuentas dadas de alta */
+  function acctField(k){ const a=activeAcct(); if(a&&a[k]!=null)return a[k];
+    if(a)return undefined; const g=acctLoad()||{}; return g[k]; }
+  function acctWrite(patch){ const L=acctsLoad()||[], a=activeAcct();
+    if(a){ Object.assign(a,patch); acctsSave(L); }
+    else { const g=acctLoad()||{}; Object.assign(g,patch); acctSave(g); } }
+  /* Las operaciones de ESTA cuenta. Con una sola cuenta se cuentan también las
+     sin etiquetar (son suyas); con varias, no se pueden atribuir y se excluyen. */
+  function acctTrades(list){ const L=acctsLoad()||[]; if(!L.length)return list;
+    const lab=activeAcctLabel(); if(!lab)return list;
+    const solo=L.length===1;
+    return list.filter(t=>{
+      const has=t.account||(Array.isArray(t.accounts)&&t.accounts.length);
+      if(!has) return solo;
+      return t.account===lab||(Array.isArray(t.accounts)&&t.accounts.includes(lab)); }); }
+  function unlabeledCount(list){ const L=acctsLoad()||[]; if(L.length<2)return 0;
+    return list.filter(t=>!t.account&&!(Array.isArray(t.accounts)&&t.accounts.length)).length; }
+
+  function guardPhase(){ const a=activeAcct()||acctLoad()||{}; if(a.guardPhase==="eval"||a.guardPhase==="funded")return a.guardPhase; return youRacer().phase==="eval"?"eval":"funded"; }
+  function guardLoad(){ const A=activeAcct(), a=A||acctLoad()||{};
     const size=a.size||50000, firm=a.firm||"", plan=a.plan||"";
     const R=planResolve(firm,plan,size);
     const ph=R?R.phase:guardPhase();
@@ -2231,7 +2263,8 @@
                    note:null,src:null,checked:null,dllOptional:false,consistencyRaisesTarget:false};
     // lo que tú escribas manda sobre el catálogo; el catálogo manda sobre nada
     const ov=k=>(a[k]!=null?a[k]:base[k]);
-    return { firm:firm||"your firm", plan:plan||"", size, phase:ph,
+    return { acctLabel:A?acctLabel(A):"", multi:((acctsLoad()||[]).length>1),
+      firm:firm||"your firm", plan:plan||"", size, phase:ph,
       phaseLabel: ph==="eval"?"Evaluation":"Funded account",
       target:ov("target"), dailyLoss:ov("dailyLoss"), maxDD:ov("maxDD"),
       consistency:ov("consistency"), minDays:ov("minDays"),
@@ -2241,7 +2274,7 @@
       custom:["target","dailyLoss","maxDD","consistency","minDays"].some(k=>a[k]!=null) }; }
 
   function guardStats(){ const g=guardLoad(), size=g.size;
-    const h=currentTrades();
+    const h=acctTrades(currentTrades());  // solo lo de ESTA cuenta
     const dayPnlMap={}; h.forEach(x=>{ dayPnlMap[x.fecha]=(dayPnlMap[x.fecha]||0)+(x.pnl||0); });
     /* el piso real depende del TIPO de trailing y de si ya se congeló —
        no es "tamaño menos drawdown" */
@@ -2368,15 +2401,24 @@
   const FRF=[["target","Eval profit target","$",1],["dailyLoss","Daily loss limit","$",1],
             ["maxDD","Max drawdown","$",1],["consistency","Consistency cap","%",1],
             ["minDays","Minimum trading days","days",0]];
-  function firmRulesEditor(){ const a=acctLoad()||{}, g=guardLoad();
+  function firmRulesEditor(){ const a=activeAcct()||acctLoad()||{}, g=guardLoad();
     const firms=Object.keys(FIRM_CATALOG), plans=firmPlans(a.firm||""), sizes=firmSizes(a.firm||"",a.plan||"");
-    if(!FIRM_EDIT) return `<div class="rules-foot">
+    const cuentas=acctsLoad()||[];
+    const cabecera = cuentas.length>1
+      ? `<div class="guard-who"><span class="sa-k">Measuring</span>
+          <div class="onb-row">${cuentas.map(x=>{const l=acctLabel(x);
+            return `<button class="onb-pill ${l===g.acctLabel?"on":""}" data-guardacct="${esc(l)}" data-hover>${esc(l)}</button>`;}).join("")}</div>
+          <p class="home-note" style="margin:6px 0 0">Every limit below belongs to this account. Switching here also switches the account your session starts on.</p></div>`
+      : "";
+    if(!FIRM_EDIT) return cabecera+`<div class="rules-foot">
       <span class="home-note">${g.known
         ? `<b>${esc(g.firm)}</b> · ${esc(g.plan)} · $${(g.size||0).toLocaleString("en-US")}${g.custom?` · <span style="color:var(--accent)">customized</span>`:""}<br>
            <span style="opacity:.75">${esc(DD_LABEL[g.ddType]||"")}${g.lockFloor!=null?` · se congela en $${g.lockFloor.toLocaleString("en-US")}`:" · nunca se congela"}</span>`
         : `No firm plan selected — the guard can't measure your real limits yet.`}</span>
       <button class="btn ghost sm" data-a="rulesedit" data-hover>${g.known?"Edit rules":"Pick your firm"}</button></div>
       ${g.known&&g.note?`<p class="home-note" style="margin:8px 0 0;opacity:.8">${esc(g.note)}</p>`:""}
+      ${(()=>{ const n=unlabeledCount(currentTrades());
+        return n?`<p class="home-note" style="margin:8px 0 0;color:#C9A24B">${n} trade${n>1?"s":""} in your journal ${n>1?"have":"has"} no account assigned, so ${n>1?"they are":"it is"} left out of these limits. Assign ${n>1?"them":"it"} in Trades to make this exact.</p>`:""; })()}
       ${g.known?`<p class="home-note" style="margin:6px 0 0;opacity:.6">Source: ${esc(g.src)} · checked ${esc(g.checked)}. Firms change rules often — confirm against your contract.</p>`:""}`;
     return `<div class="rules-edit">
       <div class="re-grid">
@@ -2394,7 +2436,7 @@
         <button class="btn ghost" data-a="rulescancel" data-hover>Cancel</button>
         <button class="btn ghost" data-a="guardreset" data-hover>Back to official values</button></div></div>`; }
 
-  function firmRulesSave(){ const a=acctLoad()||{};
+  function firmRulesSave(){ const a=activeAcct()||acctLoad()||{}; const L=acctsLoad();
     const gv=id=>{ const el=$("#"+id); return el?String(el.value).trim():null; };
     const f=gv("re-firmsel"); if(f!==null) a.firm=f;
     const p=gv("re-plansel"); if(p!==null) a.plan=p;
@@ -2404,7 +2446,8 @@
       if(raw===""){ delete a[k]; return; }
       const n=parseFloat(raw); if(isNaN(n)||n<0)return;
       a[k]= u==="%" ? n/100 : Math.round(n); });
-    acctSave(a); FIRM_EDIT=false; mostrar(vistaActual); }
+    if(activeAcct()&&L) acctsSave(L); else acctSave(a);
+    FIRM_EDIT=false; mostrar(vistaActual); }
 
   function guardCard(){ const s=guardStats(), g=s.g, rows=[];
     if(g.phase==="eval"&&g.target>0){ const tgt$=Math.round(g.target), room=Math.max(0,tgt$-Math.max(0,s.totalProfit));
@@ -2488,14 +2531,14 @@
      (los $50k) — el profit del eval no se hereda. Partimos el journal en ese punto. */
   /* El objetivo del examen sale del catálogo oficial. El campo viejo evalTarget
      quedó en 1,000 por defecto y hacía creer que ya habías pasado con $1,000. */
-  function evalTargetNow(){ const a=acctLoad()||{};
+  function evalTargetNow(){ const a=activeAcct()||acctLoad()||{};
     const R=planResolve(a.firm||"",a.plan||"",a.size||50000);
     if(a.target!=null) return a.target;
     if(R&&R.target) return R.target;
     return a.evalTarget||1000; }
   function evalPassSplit(){
     const h=histLoad().filter(x=>!x.sim&&x.pnl!=null).slice().sort((a,b)=>(a.fecha||"").localeCompare(b.fecha||""));
-    const a=acctLoad()||{}, R=planResolve(a.firm||"",a.plan||"",a.size||50000);
+    const a=activeAcct()||acctLoad()||{}, R=planResolve(a.firm||"",a.plan||"",a.size||50000);
     /* En un plan FONDEADO no hay examen que pasar: la cuenta ya es esa.
        Aplicar aquí el reinicio de evaluación descartaba operaciones reales. */
     if(R&&R.phase==="funded") return { all:h, passed:false, evalTrades:h, fundedTrades:h };
@@ -3326,6 +3369,7 @@
     const oe=e.target.closest("[data-onbexp]"); if(oe&&ONB){ONB.data.exp=oe.dataset.onbexp;renderOnb();return;}
     const go=e.target.closest("[data-go]"); if(go){mostrar(go.dataset.go);return;}
     const sm=e.target.closest("[data-sesmode]"); if(sm){sesModeSave(sm.dataset.sesmode);mostrar("sesion");return;}
+    const ga=e.target.closest("[data-guardacct]"); if(ga){sesAcctsSave([ga.dataset.guardacct]);mostrar(vistaActual);return;}
     const sa=e.target.closest("[data-sesacct]"); if(sa){sesAcctToggle(sa.dataset.sesacct);mostrar("sesion");return;}
     const saa=e.target.closest("[data-sesacctall]"); if(saa){sesAcctsSave(saa.dataset.sesacctall==="1"?acctList():[]);mostrar("sesion");return;}
     const ae=e.target.closest("[data-acedit]"); if(ae){ACCT_EDIT=+ae.dataset.acedit;mostrar("cuentas");return;}
